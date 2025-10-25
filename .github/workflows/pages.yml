@@ -1,8 +1,9 @@
-name: Deploy to Pages
+name: Deploy Next.js site to Pages
 
 on:
   push:
-    branches: [stable]
+    branches: ["stable"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,21 +12,56 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@d3b07384d113edec49eaa6238ad5ff00c6f6a4e2
-        with: { version: 9 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: "pnpm" }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: ./out }
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: next
+
+      - name: Restore Next.js cache
+        uses: actions/cache@v4
+        with:
+          path: site/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('site/pnpm-lock.yaml') }}-${{ hashFiles('site/**.[jt]s', 'site/**.[jt]sx', 'site/**.ts', 'site/**.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('site/pnpm-lock.yaml') }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (static export to ./out)
+        run: pnpm build
+
+      - name: Add CNAME
+        run: |
+          echo "vscode-profile-composer.erlete.dev" > out/CNAME
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/out
 
   deploy:
     needs: build
