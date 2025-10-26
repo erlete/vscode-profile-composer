@@ -41,7 +41,6 @@ export default function ComponentSearchBar({
   const [chips, setChips] = React.useState<string[]>(value ?? []);
   const [inputValue, setInputValue] = React.useState("");
   const { startsWith } = useFilter({ sensitivity: "base" });
-  const [loading1, setLoading1] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
 
   // keep internal state in sync if parent controls it
@@ -95,7 +94,6 @@ export default function ComponentSearchBar({
   }
 
   function onSearch() {
-    setLoading1(true);
     redirect(
       "/profiles/" + chips.sort().join(",") + ".code-profile",
       RedirectType.push
@@ -104,7 +102,7 @@ export default function ComponentSearchBar({
 
   async function onCopyURL() {
     setLoading2(true);
-    const url = `${window.location.origin}/profiles/${chips.sort().join(",")}.code-profile"`;
+    const url = `${window.location.origin}/profiles/${chips.sort().join(",")}.code-profile`;
     navigator.clipboard.writeText(url);
 
     // Wait for random between 0 and 1 seconds:
@@ -225,20 +223,19 @@ export default function ComponentSearchBar({
           isLoading={loading2}
           variant="solid"
           color="primary"
-          isDisabled={chips.length === 0 || loading1 || loading2}
+          isDisabled={chips.length === 0 || loading2}
           onPress={onCopyURL}
         >
-          Copy URL to profile
+          Copy Profile URL
         </Button>
         <Button
           fullWidth
-          isLoading={loading1}
           variant="bordered"
           color="primary"
-          isDisabled={chips.length === 0 || loading1 || loading2}
+          isDisabled={chips.length === 0 || loading2}
           onPress={onSearch}
         >
-          Generate raw preview
+          Download Profile
         </Button>
       </motion.div>
     </div>
