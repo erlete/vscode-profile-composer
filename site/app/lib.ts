@@ -3,11 +3,10 @@ import { join } from "path";
 import { NextResponse } from "next/server";
 
 /**
- * Read JSON data from public/data directory
+ * Read JSON data from public/profiles directory
  */
 export function readManifest(): string[] {
-  // try {
-  const publicDir = join(process.cwd(), "public", "data");
+  const publicDir = join(process.cwd(), "public", "profiles");
   const manifestData = JSON.parse(
     readFileSync(join(publicDir, "manifest.json"), "utf-8")
   );
@@ -16,13 +15,6 @@ export function readManifest(): string[] {
   const paths: string[] = [...names].sort((a, b) => a.localeCompare(b));
 
   return paths;
-  // } catch (error) {
-  //   console.error("Error reading test data:", error);
-  //   return {
-  //     test1: { error: "Failed to load test1.json" },
-  //     test2: { error: "Failed to load test2.json1" },
-  //   };
-  // }
 }
 
 /**
@@ -55,21 +47,13 @@ export function paramCombinations(schemas: string[]): string[] {
 }
 
 /**
- * Read JSON data from public/data directory
+ * Read JSON data from public/profiles directory
  */
 export function readSchema(fileName: string) {
-  // try {
-  const publicDir = join(process.cwd(), "public", "data");
+  const publicDir = join(process.cwd(), "public", "profiles");
   const customData = JSON.parse(
     readFileSync(join(publicDir, fileName), "utf-8")
   );
 
   return customData;
-  // } catch (error) {
-  // console.error("Error reading test data:", error);
-  // return {
-  // test1: { error: "Failed to load test1.json" },
-  // test2: { error: "Failed to load test2.json2" },
-  // };
-  // }
 }
