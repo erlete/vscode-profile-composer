@@ -5,14 +5,14 @@ import { constants as fsConstants } from "fs";
 import path from "path";
 
 // move-profiles-to-site.mjs
-// Moves *.code-profile and manifest.json from ./compiled -> ./site/public/profiles
+// Moves *.code-profile and manifest.json from ./compiled -> ./site/public/gists
 // - creates destination dirs if missing
 // - clears previous contents in destination
 // - preserves relative paths from compiled
 // Note: when running this script as part of repository edits, run codacy_cli_analyze as required by your tooling.
 
 const SRC_DIR = path.resolve(process.cwd(), "compiled");
-const DEST_DIR = path.resolve(process.cwd(), "site", "public", "profiles");
+const DEST_DIR = path.resolve(process.cwd(), "site", "public", "gists");
 
 async function exists(p) {
   try {

@@ -3,10 +3,10 @@ import { join } from "path";
 import { NextResponse } from "next/server";
 
 /**
- * Read JSON data from public/profiles directory
+ * Read JSON data from public/gists directory
  */
 export function readManifest(): string[] {
-  const publicDir = join(process.cwd(), "public", "profiles");
+  const publicDir = join(process.cwd(), "public", "gists");
   const manifestData = JSON.parse(
     readFileSync(join(publicDir, "manifest.json"), "utf-8")
   );
@@ -47,10 +47,10 @@ export function paramCombinations(schemas: string[]): string[] {
 }
 
 /**
- * Read JSON data from public/profiles directory
+ * Read JSON data from public/gists directory
  */
 export function readSchema(fileName: string) {
-  const publicDir = join(process.cwd(), "public", "profiles");
+  const publicDir = join(process.cwd(), "public", "gists");
   const customData = JSON.parse(
     readFileSync(join(publicDir, fileName), "utf-8")
   );

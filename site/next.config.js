@@ -7,15 +7,6 @@ const nextConfig = {
   output: "export",
   poweredByHeader: false,
   trailingSlash: true,
-  async redirects() {
-    return [
-      {
-        source: "/profiles/:path*",
-        destination: "/gists/:path*",
-        permanent: true,
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;

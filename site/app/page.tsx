@@ -43,7 +43,7 @@ export default function Page() {
     async function fetchManifest() {
       try {
         setIsLoading(true);
-        const response = await fetch("/profiles/manifest.json");
+        const response = await fetch("/gists/manifest.json");
 
         if (!response.ok) {
           throw new Error(`Failed to fetch manifest: ${response.statusText}`);

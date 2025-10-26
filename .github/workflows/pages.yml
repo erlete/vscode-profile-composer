@@ -38,14 +38,14 @@ jobs:
       - name: Compile templates
         run: node ./compiler/index.mjs --no-fetch
 
-      - name: Create site public profiles directory
-        run: mkdir -p site/public/profiles
+      - name: Create site public gists directory
+        run: mkdir -p site/public/gists
 
       - name: Move compiled profiles to site
         run: |
-          rm -rf site/public/profiles/*
-          cp compiled/*.code-profile site/public/profiles/ 2>/dev/null || true
-          cp compiled/manifest.json site/public/profiles/ 2>/dev/null || true
+          rm -rf site/public/gists/*
+          cp compiled/*.code-profile site/public/gists/ 2>/dev/null || true
+          cp compiled/manifest.json site/public/gists/ 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

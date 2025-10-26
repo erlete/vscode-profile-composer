@@ -95,14 +95,14 @@ export default function ComponentSearchBar({
 
   function onSearch() {
     redirect(
-      "/profiles/" + chips.sort().join(",") + ".code-profile",
+      "/gists/" + chips.sort().join(",") + ".code-profile",
       RedirectType.push
     );
   }
 
   async function onCopyURL() {
     setLoading2(true);
-    const url = `${window.location.origin}/profiles/${chips.sort().join(",")}.code-profile`;
+    const url = `${window.location.origin}/gists/${chips.sort().join(",")}.code-profile`;
     navigator.clipboard.writeText(url);
 
     // Wait for random between 0 and 1 seconds:
