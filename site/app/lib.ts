@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
  * @param {string[]} schemas
  * @returns {string[]}
  */
-function paramCombinations(schemas: string[]): string[] {
+export function paramCombinations(schemas: string[]): string[] {
   if (!schemas || schemas.length === 0) return [];
 
   // Ensure input is sorted so combinations are canonical (e.g. "default,devops")
@@ -34,7 +34,7 @@ function paramCombinations(schemas: string[]): string[] {
 /**
  * Read JSON data from public/data directory
  */
-function readTestData() {
+export function readTestData() {
   try {
     const publicDir = join(process.cwd(), "public", "data");
     const test1Path = join(publicDir, "test1.json");
