@@ -1,19 +1,11 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 import { NextResponse } from "next/server";
-import { paramCombinations, readTestData } from "@/app/lib";
+import { readManifest, readSchema } from "@/app/lib";
 
 export const dynamic = "force-static";
+export const revalidate = 0;
 
 export async function generateStaticParams() {
-  // For demo purposes, we return hardcoded values.
-  // In a real app, you might fetch this from a database or filesystem.
-  const schemas = ["default", "web-development", "data-science", "devops"];
-
-  // Map all non-empty combinations of the schemas (canonical sorted order):
-  const combinations = paramCombinations(schemas);
-  console.log("param combinations:", combinations);
-  return combinations.map((schemaCombo) => ({ schemas: schemaCombo }));
+  return readManifest().map((schemaCombo) => ({ schemas: schemaCombo }));
 }
 
 export async function GET(
@@ -21,21 +13,16 @@ export async function GET(
   { params }: { params: Promise<{ schemas: string }> }
 ) {
   try {
-    const resolvedParams = await params;
-    const testData = readTestData();
+    const schemaList = (await params).schemas;
+    if (!readManifest().includes(schemaList)) {
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
 
-    return NextResponse.json(testData, {
+    return NextResponse.json(readSchema(`${schemaList}.code-profile`), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
       },
-    });
-
-    return NextResponse.json({
-      schemas: resolvedParams.schemas,
-      data: testData,
-      timestamp: new Date().toISOString(),
-      message: `Profile data for schemas: ${resolvedParams.schemas}`,
     });
   } catch (error) {
     return NextResponse.json(

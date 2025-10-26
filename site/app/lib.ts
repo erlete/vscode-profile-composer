@@ -3,6 +3,29 @@ import { join } from "path";
 import { NextResponse } from "next/server";
 
 /**
+ * Read JSON data from public/data directory
+ */
+export function readManifest(): string[] {
+  // try {
+  const publicDir = join(process.cwd(), "public", "data");
+  const manifestData = JSON.parse(
+    readFileSync(join(publicDir, "manifest.json"), "utf-8")
+  );
+
+  const names: string[] = manifestData.profiles.map((m: any) => m.name);
+  const paths: string[] = [...names].sort((a, b) => a.localeCompare(b));
+
+  return paths;
+  // } catch (error) {
+  //   console.error("Error reading test data:", error);
+  //   return {
+  //     test1: { error: "Failed to load test1.json" },
+  //     test2: { error: "Failed to load test2.json1" },
+  //   };
+  // }
+}
+
+/**
  * Given a list of params, generate the permutation list.
  *
  * If the input value is, say, ['a', 'b', 'c'], the output should be:
@@ -34,64 +57,19 @@ export function paramCombinations(schemas: string[]): string[] {
 /**
  * Read JSON data from public/data directory
  */
-export function readTestData() {
-  try {
-    const publicDir = join(process.cwd(), "public", "data");
-    const test1Path = join(publicDir, "test1.json");
-    const test2Path = join(publicDir, "test2.json");
+export function readSchema(fileName: string) {
+  // try {
+  const publicDir = join(process.cwd(), "public", "data");
+  const customData = JSON.parse(
+    readFileSync(join(publicDir, fileName), "utf-8")
+  );
 
-    const test1Data = JSON.parse(readFileSync(test1Path, "utf-8"));
-    const test2Data = JSON.parse(readFileSync(test2Path, "utf-8"));
-
-    return test1Data;
-    return { test1: test1Data, test2: test2Data };
-  } catch (error) {
-    console.error("Error reading test data:", error);
-    return {
-      test1: { error: "Failed to load test1.json" },
-      test2: { error: "Failed to load test2.json" },
-    };
-  }
-}
-
-// Generate static params from schemas
-export async function generateStaticParams() {
-  // For demo purposes, we return hardcoded values.
-  // In a real app, you might fetch this from a database or filesystem.
-  const schemas = ["default", "web-development", "data-science", "devops"];
-
-  // Map all non-empty combinations of the schemas (canonical sorted order):
-  const combinations = paramCombinations(schemas);
-  console.log("param combinations:", combinations);
-  return combinations.map((schemaCombo) => ({ schemas: schemaCombo }));
-}
-
-// GET handler for static export - reads test data from public/data directory
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ schemas: string }> }
-) {
-  try {
-    const resolvedParams = await params;
-    const testData = readTestData();
-
-    return NextResponse.json(testData, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    return NextResponse.json({
-      schemas: resolvedParams.schemas,
-      data: testData,
-      timestamp: new Date().toISOString(),
-      message: `Profile data for schemas: ${resolvedParams.schemas}`,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to load profile data" },
-      { status: 500 }
-    );
-  }
+  return customData;
+  // } catch (error) {
+  // console.error("Error reading test data:", error);
+  // return {
+  // test1: { error: "Failed to load test1.json" },
+  // test2: { error: "Failed to load test2.json2" },
+  // };
+  // }
 }
