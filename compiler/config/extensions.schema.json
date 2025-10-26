@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema Title",
+  "description": "A schema that defines an 'extends' and 'content' property",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "Schema reference for the base template to apply",
+      "type": "string"
+    },
+    "extends": {
+      "description": "An optional object with optional arrays indicating the extensions to apply",
+      "type": "object",
+      "properties": {
+        "bundles": {
+          "description": "An array of strings indicating the bundle templates to extend",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "frameworks": {
+          "description": "An array of strings indicating the framework templates to extend",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "languages": {
+          "description": "An array of strings indicating the languages templates to extend",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "content": {
+      "description": "The content of the object, an array of strings",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["$schema"],
+  "additionalProperties": false
+}
