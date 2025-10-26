@@ -62,11 +62,5 @@ async function getExtensionInfo(extensionId) {
   });
 }
 
-// Usage
-const extensionId = process.argv[2] || "beardedbear.beardedtheme";
-try {
-  const info = await getExtensionInfo(extensionId);
-  console.log(JSON.stringify(info, null, 2));
-} catch (error) {
-  console.error("Error:", error.message);
-}
+// Export the function for use in other modules
+export { getExtensionInfo };
