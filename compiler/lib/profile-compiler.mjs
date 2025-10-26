@@ -73,9 +73,7 @@ export class ProfileCompiler {
    * @returns {Promise<Object>} extensions object for VS Code profile
    */
   async compileExtensions(extensionIds, options = {}) {
-    const extensions = {
-      list: [],
-    };
+    const extensions = [];
 
     if (options.fetchExtensionInfo !== false) {
       // Fetch extension information for each extension
@@ -89,7 +87,7 @@ export class ProfileCompiler {
           }
 
           if (extensionInfo) {
-            extensions.list.push({
+            extensions.push({
               identifier: {
                 id: extensionInfo.identifier.id,
                 uuid: extensionInfo.identifier.uuid || this.generateUUID(),
@@ -100,7 +98,7 @@ export class ProfileCompiler {
             });
           } else {
             // Fallback for extensions that couldn't be fetched
-            extensions.list.push({
+            extensions.push({
               identifier: {
                 id: extensionId,
                 uuid: this.generateUUID(),
@@ -115,7 +113,7 @@ export class ProfileCompiler {
             `Failed to fetch info for extension ${extensionId}: ${error.message}`
           );
           // Add extension without detailed info
-          extensions.list.push({
+          extensions.push({
             identifier: {
               id: extensionId,
               uuid: this.generateUUID(),
@@ -128,7 +126,7 @@ export class ProfileCompiler {
       }
     } else {
       // Simple mode without fetching extension info
-      extensions.list = extensionIds.map((id) => ({
+      extensions = extensionIds.map((id) => ({
         identifier: {
           id: id,
           uuid: this.generateUUID(),

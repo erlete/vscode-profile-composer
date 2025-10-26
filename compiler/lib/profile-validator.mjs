@@ -27,28 +27,23 @@ export class ProfileValidator {
           type: "string",
         },
         extensions: {
-          type: "object",
-          properties: {
-            list: {
-              type: "array",
-              items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              identifier: {
                 type: "object",
                 properties: {
-                  identifier: {
-                    type: "object",
-                    properties: {
-                      id: { type: "string" },
-                      uuid: { type: "string" },
-                    },
-                    required: ["id"],
-                  },
-                  displayName: { type: "string" },
-                  version: { type: "string" },
-                  applicationScoped: { type: "boolean" },
+                  id: { type: "string" },
+                  uuid: { type: "string" },
                 },
-                required: ["identifier"],
+                required: ["id"],
               },
+              displayName: { type: "string" },
+              version: { type: "string" },
+              applicationScoped: { type: "boolean" },
             },
+            required: ["identifier"],
           },
         },
         settings: {
@@ -117,12 +112,8 @@ export class ProfileValidator {
   generateWarnings(profile) {
     const warnings = [];
 
-    // Check for empty extensions list
-    if (
-      profile.extensions &&
-      profile.extensions.list &&
-      profile.extensions.list.length === 0
-    ) {
+    // Check for empty extensions
+    if (profile.extensions && profile.extensions.length === 0) {
       warnings.push("Profile has no extensions");
     }
 
@@ -132,10 +123,8 @@ export class ProfileValidator {
     }
 
     // Check for duplicate extension IDs
-    if (profile.extensions && profile.extensions.list) {
-      const extensionIds = profile.extensions.list.map(
-        (ext) => ext.identifier.id
-      );
+    if (profile.extensions && profile.extensions) {
+      const extensionIds = profile.extensions.map((ext) => ext.identifier.id);
       const duplicates = extensionIds.filter(
         (id, index) => extensionIds.indexOf(id) !== index
       );
@@ -147,8 +136,8 @@ export class ProfileValidator {
     }
 
     // Check for invalid extension IDs format
-    if (profile.extensions && profile.extensions.list) {
-      for (const extension of profile.extensions.list) {
+    if (profile.extensions && profile.extensions) {
+      for (const extension of profile.extensions) {
         const id = extension.identifier.id;
         if (!id.includes(".") || id.split(".").length !== 2) {
           warnings.push(

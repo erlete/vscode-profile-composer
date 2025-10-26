@@ -237,10 +237,10 @@ export class ProfileGenerator {
         size: stats.size,
         created: stats.birthtime.toISOString(),
         modified: stats.mtime.toISOString(),
-        extensionCount: profile.extensions?.list?.length || 0,
+        extensionCount: profile.extensions?.length || 0,
         settingCount: Object.keys(profile.settings || {}).length,
         components: {
-          hasExtensions: !!profile.extensions?.list?.length,
+          hasExtensions: !!profile.extensions?.length,
           hasSettings: !!Object.keys(profile.settings || {}).length,
           hasKeybindings: !!profile.keybindings?.length,
           hasTasks: !!(Object.keys(profile.tasks || {}).length > 1), // More than just version

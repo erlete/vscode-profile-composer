@@ -62,9 +62,7 @@ async function test() {
     });
 
     console.log(`   Generated profile: ${profile.name}`);
-    console.log(
-      `   Extensions count: ${profile.extensions?.list?.length || 0}`
-    );
+    console.log(`   Extensions count: ${profile.extensions?.length || 0}`);
     console.log(
       `   Settings count: ${Object.keys(profile.settings || {}).length}`
     );
