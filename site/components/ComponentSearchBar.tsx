@@ -6,6 +6,9 @@ import { Chip } from "@heroui/chip";
 import { useFilter } from "@react-aria/i18n";
 import { Button } from "@heroui/button";
 import { ClearIcon } from "./icons";
+import { redirect, RedirectType } from "next/navigation";
+import { addToast } from "@heroui/toast";
+import { motion } from "framer-motion";
 
 type Item = { key: string; label: string };
 
@@ -38,6 +41,8 @@ export default function ComponentSearchBar({
   const [chips, setChips] = React.useState<string[]>(value ?? []);
   const [inputValue, setInputValue] = React.useState("");
   const { startsWith } = useFilter({ sensitivity: "base" });
+  const [loading1, setLoading1] = React.useState(false);
+  const [loading2, setLoading2] = React.useState(false);
 
   // keep internal state in sync if parent controls it
   React.useEffect(() => {
@@ -84,11 +89,40 @@ export default function ComponentSearchBar({
     onChange?.(updated);
   }
 
+  function removeAllChips() {
+    if (!value) setChips([]);
+    onChange?.([]);
+  }
+
+  function onSearch() {
+    setLoading1(true);
+    redirect("/api/compose/" + chips.sort().join(","), RedirectType.push);
+  }
+
+  async function onCopyURL() {
+    setLoading2(true);
+    const url = `${window.location.origin}/api/compose/${chips.sort().join(",")}`;
+    navigator.clipboard.writeText(url);
+
+    // Wait for random between 0 and 1 seconds:
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
+    setLoading2(false);
+
+    addToast({
+      title: "Link copied!",
+      description:
+        'Paste this URL in the "Import Profile" dialog from VSCode and you\'re all set!',
+      color: "primary",
+      variant: "flat",
+      timeout: 4000,
+    });
+  }
+
   return (
     <div className="flex flex-col gap-3 w-full items-center justify-center">
       {/* Selected chips */}
       {chipItems.length > 0 ? (
-        <div className="flex flex-wrap gap-2 items-start w-full max-w-xl">
+        <div className="flex flex-wrap gap-2 items-start w-full max-w-lg">
           {chipItems.map((item) => (
             <Chip
               key={item.key}
@@ -126,9 +160,7 @@ export default function ComponentSearchBar({
               variant="light"
               aria-label="Clear"
               size="lg"
-              onPress={() => {
-                chipItems.forEach((item) => removeChip(item.key));
-              }}
+              onPress={removeAllChips}
             >
               <ClearIcon
                 size={32}
@@ -163,7 +195,7 @@ export default function ComponentSearchBar({
             addChip(firstMatch.key);
           }
         }}
-        className="max-w-xl"
+        className="w-full max-w-lg"
         menuTrigger="input"
       >
         {(item) => (
@@ -172,6 +204,40 @@ export default function ComponentSearchBar({
           </AutocompleteItem>
         )}
       </Autocomplete>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={
+          chips.length > 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+        }
+        transition={{ duration: 0.75 }}
+        className="w-full max-w-lg flex items-center justify-center gap-2"
+        aria-hidden={!(chips.length > 0)}
+        style={{
+          // keep it in the layout but make it non-interactive when "hidden"
+          pointerEvents: chips.length > 0 ? "auto" : "none",
+        }}
+      >
+        <Button
+          fullWidth
+          isLoading={loading2}
+          variant="solid"
+          color="primary"
+          isDisabled={chips.length === 0 || loading1 || loading2}
+          onPress={onCopyURL}
+        >
+          Copy URL to profile
+        </Button>
+        <Button
+          fullWidth
+          isLoading={loading1}
+          variant="bordered"
+          color="primary"
+          isDisabled={chips.length === 0 || loading1 || loading2}
+          onPress={onSearch}
+        >
+          Generate raw preview
+        </Button>
+      </motion.div>
     </div>
   );
 }
