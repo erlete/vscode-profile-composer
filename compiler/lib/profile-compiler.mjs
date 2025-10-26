@@ -17,16 +17,17 @@ export class ProfileCompiler {
    * @returns {Promise<Object>} complete VS Code profile
    */
   async compileProfile(resolvedTemplates, options = {}) {
+    // Follow VS Code's IUserDataProfileTemplate interface
     const profile = {
       name: options.name || "Generated Profile",
-      extensions: {},
-      settings: {},
-      keybindings: [],
-      tasks: {},
-      snippets: {},
     };
 
-    // Compile extensions
+    // Add optional icon if provided
+    if (options.icon) {
+      profile.icon = options.icon;
+    }
+
+    // Compile extensions as JSON string
     if (resolvedTemplates.extensions && resolvedTemplates.extensions.content) {
       profile.extensions = await this.compileExtensions(
         resolvedTemplates.extensions.content,
@@ -34,14 +35,14 @@ export class ProfileCompiler {
       );
     }
 
-    // Compile settings
+    // Compile settings as JSON string
     if (resolvedTemplates.settings && resolvedTemplates.settings.content) {
       profile.settings = this.compileSettings(
         resolvedTemplates.settings.content
       );
     }
 
-    // Compile keybindings if present
+    // Compile keybindings as JSON string if present
     if (
       resolvedTemplates.keybindings &&
       resolvedTemplates.keybindings.content
@@ -51,15 +52,25 @@ export class ProfileCompiler {
       );
     }
 
-    // Compile tasks if present
+    // Compile tasks as JSON string if present
     if (resolvedTemplates.tasks && resolvedTemplates.tasks.content) {
       profile.tasks = this.compileTasks(resolvedTemplates.tasks.content);
     }
 
-    // Compile snippets if present
+    // Compile snippets as JSON string if present
     if (resolvedTemplates.snippets && resolvedTemplates.snippets.content) {
       profile.snippets = this.compileSnippets(
         resolvedTemplates.snippets.content
+      );
+    }
+
+    // Compile globalState as JSON string if present
+    if (
+      resolvedTemplates.globalState &&
+      resolvedTemplates.globalState.content
+    ) {
+      profile.globalState = this.compileGlobalState(
+        resolvedTemplates.globalState.content
       );
     }
 
@@ -70,7 +81,7 @@ export class ProfileCompiler {
    * Compile extensions array to VS Code extension format
    * @param {string[]} extensionIds - array of extension IDs
    * @param {Object} options - compilation options
-   * @returns {Promise<Object>} extensions object for VS Code profile
+   * @returns {Promise<string>} extensions JSON string for VS Code profile
    */
   async compileExtensions(extensionIds, options = {}) {
     const extensions = [];
@@ -87,14 +98,17 @@ export class ProfileCompiler {
           }
 
           if (extensionInfo) {
+            // Follow VS Code's IProfileExtension interface
             extensions.push({
               identifier: {
-                id: extensionInfo.identifier.id,
-                uuid: extensionInfo.identifier.uuid || this.generateUUID(),
+                id: extensionId,
+                uuid: extensionInfo.identifier?.uuid || this.generateUUID(),
               },
               displayName: extensionInfo.displayName || extensionId,
-              version: extensionInfo.version || "latest",
+              version: extensionInfo.version,
+              preRelease: extensionInfo.preRelease || false,
               applicationScoped: extensionInfo.applicationScoped || false,
+              disabled: false,
             });
           } else {
             // Fallback for extensions that couldn't be fetched
@@ -104,8 +118,8 @@ export class ProfileCompiler {
                 uuid: this.generateUUID(),
               },
               displayName: extensionId,
-              version: "latest",
               applicationScoped: false,
+              disabled: false,
             });
           }
         } catch (error) {
@@ -119,64 +133,81 @@ export class ProfileCompiler {
               uuid: this.generateUUID(),
             },
             displayName: extensionId,
-            version: "latest",
             applicationScoped: false,
+            disabled: false,
           });
         }
       }
     } else {
       // Simple mode without fetching extension info
-      extensions = extensionIds.map((id) => ({
-        identifier: {
-          id: id,
-          uuid: this.generateUUID(),
-        },
-        displayName: id,
-        version: "latest",
-        applicationScoped: false,
-      }));
+      for (const id of extensionIds) {
+        extensions.push({
+          identifier: {
+            id: id,
+            uuid: this.generateUUID(),
+          },
+          displayName: id,
+          applicationScoped: false,
+          disabled: false,
+        });
+      }
     }
 
-    return extensions;
+    // Return as JSON string as required by VS Code profile format
+    return JSON.stringify(extensions);
   }
 
   /**
    * Compile settings object
    * @param {Object} settings - settings key-value pairs
-   * @returns {Object} settings object for VS Code profile
+   * @returns {string} settings JSON string for VS Code profile
    */
   compileSettings(settings) {
-    return { ...settings };
+    // Follow VS Code's ISettingsContent format
+    const settingsContent = {
+      settings: JSON.stringify(settings, null, 2),
+    };
+    return JSON.stringify(settingsContent);
   }
 
   /**
    * Compile keybindings array
    * @param {Array} keybindings - array of keybinding objects
-   * @returns {Array} keybindings array for VS Code profile
+   * @returns {string} keybindings JSON string for VS Code profile
    */
   compileKeybindings(keybindings) {
-    return [...keybindings];
+    return JSON.stringify([...keybindings]);
   }
 
   /**
    * Compile tasks configuration
    * @param {Object} tasks - tasks configuration
-   * @returns {Object} tasks object for VS Code profile
+   * @returns {string} tasks JSON string for VS Code profile
    */
   compileTasks(tasks) {
-    return {
+    const tasksConfig = {
       version: "2.0.0",
       ...tasks,
     };
+    return JSON.stringify(tasksConfig);
   }
 
   /**
    * Compile snippets
    * @param {Object} snippets - snippets organized by language
-   * @returns {Object} snippets object for VS Code profile
+   * @returns {string} snippets JSON string for VS Code profile
    */
   compileSnippets(snippets) {
-    return { ...snippets };
+    return JSON.stringify({ ...snippets });
+  }
+
+  /**
+   * Compile global state
+   * @param {Object} globalState - global state object
+   * @returns {string} global state JSON string for VS Code profile
+   */
+  compileGlobalState(globalState) {
+    return JSON.stringify({ ...globalState });
   }
 
   /**

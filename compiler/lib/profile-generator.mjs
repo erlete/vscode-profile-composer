@@ -41,12 +41,16 @@ export class ProfileGenerator {
       "keybindings",
       "tasks",
       "snippets",
+      "globalState",
     ];
     const resolvedTemplates = {};
 
     // Process each component type
     for (const componentType of componentTypes) {
-      const mergedContent = componentType === "settings" ? {} : [];
+      const mergedContent =
+        componentType === "settings" || componentType === "globalState"
+          ? {}
+          : [];
 
       // Process bundles
       for (const bundleName of bundles) {
@@ -56,7 +60,7 @@ export class ProfileGenerator {
           componentType
         );
         if (template.content) {
-          if (componentType === "settings") {
+          if (componentType === "settings" || componentType === "globalState") {
             Object.assign(mergedContent, template.content);
           } else {
             mergedContent.push(
@@ -76,7 +80,7 @@ export class ProfileGenerator {
           componentType
         );
         if (template.content) {
-          if (componentType === "settings") {
+          if (componentType === "settings" || componentType === "globalState") {
             Object.assign(mergedContent, template.content);
           } else {
             mergedContent.push(
@@ -96,7 +100,7 @@ export class ProfileGenerator {
           componentType
         );
         if (template.content) {
-          if (componentType === "settings") {
+          if (componentType === "settings" || componentType === "globalState") {
             Object.assign(mergedContent, template.content);
           } else {
             mergedContent.push(
