@@ -43,9 +43,11 @@ export async function generateStaticParams() {
 
 export async function GET(request: NextRequest) {
   // Fetch contents from /public/data/test1.json:
-  const data1Response = await fetch(
-    `${request.nextUrl.origin}/data/test1.json`
-  );
+  const origin =
+    process.env.NODE_ENV === "production"
+      ? "htps://vscode-profile-composer.erlete.dev"
+      : "http://localhost:3000";
+  const data1Response = await fetch(`${origin}/data/test1.json`);
   const data1 = await data1Response.json();
 
   // return NextResponse.json(
