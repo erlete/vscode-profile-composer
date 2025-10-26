@@ -36,7 +36,7 @@ jobs:
         working-directory: compiler
 
       - name: Compile templates
-        run: node ./compiler/index.mjs --no-fetch
+        run: node ./compiler/index.mjs
 
       - name: Create site public gists directory
         run: mkdir -p site/public/gists

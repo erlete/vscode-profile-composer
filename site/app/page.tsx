@@ -100,7 +100,7 @@ export default function Page() {
       <div className="flex w-full flex-col">
         {error && (
           <div className="w-full text-center text-red-500 mb-4">
-            Error loading profiles: {error}
+            Error loading profiles
           </div>
         )}
         {isLoading ? (
