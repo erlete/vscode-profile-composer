@@ -5,7 +5,9 @@ export const dynamic = "force-static";
 export const revalidate = 0;
 
 export async function generateStaticParams() {
-  return readManifest().map((schemaCombo) => ({ schemas: schemaCombo }));
+  const paths = readManifest().map((schemaCombo) => ({ schemas: schemaCombo }));
+  console.log(`generateStaticParams: ${JSON.stringify(paths)}`);
+  return paths;
 }
 
 export async function GET(
@@ -14,7 +16,11 @@ export async function GET(
 ) {
   try {
     const schemaList = (await params).schemas;
+    console.log(`schemaList is ${schemaList}`);
+    console.log(`manifest is ${readManifest()}`);
+
     if (!readManifest().includes(schemaList)) {
+      console.log(`Profile not found:`);
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
