@@ -139,11 +139,89 @@ export class ProfileGenerator {
   }
 
   /**
-   * Generate profiles for all possible combinations
+   * Generate profiles for individual base templates only (no combinations)
+   * @param {Object} options - generation options
+   * @returns {Promise<Object>} map of profile names to profiles
+   */
+  async generateBaseProfiles(options = {}) {
+    const availableBundles = await this.resolver.getAvailableTemplates(
+      "bundles"
+    );
+    const availableFrameworks = await this.resolver.getAvailableTemplates(
+      "frameworks"
+    );
+    const availableLanguages = await this.resolver.getAvailableTemplates(
+      "languages"
+    );
+
+    console.log(`Found base templates:`);
+    console.log(`  Bundles: ${availableBundles.join(", ") || "none"}`);
+    console.log(`  Frameworks: ${availableFrameworks.join(", ") || "none"}`);
+    console.log(`  Languages: ${availableLanguages.join(", ") || "none"}`);
+
+    const profiles = {};
+    const baseTemplates = [
+      ...availableBundles.map((name) => ({
+        bundles: [name],
+        frameworks: [],
+        languages: [],
+      })),
+      ...availableFrameworks.map((name) => ({
+        bundles: [],
+        frameworks: [name],
+        languages: [],
+      })),
+      ...availableLanguages.map((name) => ({
+        bundles: [],
+        frameworks: [],
+        languages: [name],
+      })),
+    ];
+
+    console.log(`Generating ${baseTemplates.length} base profiles...`);
+
+    for (const template of baseTemplates) {
+      try {
+        const profile = await this.generateProfile({
+          bundles: template.bundles,
+          frameworks: template.frameworks,
+          languages: template.languages,
+          options,
+        });
+
+        const profileKey = this.generateProfileName(
+          template.bundles,
+          template.frameworks,
+          template.languages
+        );
+        profiles[profileKey] = profile;
+
+        console.log(`✓ Generated base profile: ${profileKey}`);
+      } catch (error) {
+        const profileKey = this.generateProfileName(
+          template.bundles,
+          template.frameworks,
+          template.languages
+        );
+        console.error(
+          `✗ Failed to generate base profile ${profileKey}: ${error.message}`
+        );
+      }
+    }
+
+    return profiles;
+  }
+
+  /**
+   * Generate profiles for all possible combinations (DEPRECATED - use generateBaseProfiles instead)
    * @param {Object} options - generation options
    * @returns {Promise<Object>} map of profile names to profiles
    */
   async generateAllProfiles(options = {}) {
+    console.warn(
+      "⚠️  generateAllProfiles is deprecated. Use generateBaseProfiles for better performance with server-side merging."
+    );
+
     const availableBundles = await this.resolver.getAvailableTemplates(
       "bundles"
     );

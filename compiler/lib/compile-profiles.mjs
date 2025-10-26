@@ -45,9 +45,9 @@ async function main() {
         options.outputDir
       );
       console.log(`✅ Generated profile: ${profileName}`);
-    } else {
-      // Generate all possible profiles
-      console.log("📦 Generating all possible profiles...");
+    } else if (options.allCombinations) {
+      // Generate all possible profile combinations (legacy mode)
+      console.log("📦 Generating all possible profile combinations...");
       const profiles = await generator.generateAllProfiles({
         fetchExtensionInfo: !options.noFetch,
       });
@@ -57,6 +57,24 @@ async function main() {
 
       console.log(
         `✅ Successfully generated ${Object.keys(profiles).length} profiles`
+      );
+    } else {
+      // Generate base profiles only (server-side merging handles combinations)
+      console.log("📦 Generating base profiles for server-side merging...");
+      const profiles = await generator.generateBaseProfiles({
+        fetchExtensionInfo: !options.noFetch,
+      });
+
+      console.log(`💾 Saving ${Object.keys(profiles).length} base profiles...`);
+      await generator.saveProfiles(profiles, options.outputDir);
+
+      console.log(
+        `✅ Successfully generated ${
+          Object.keys(profiles).length
+        } base profiles`
+      );
+      console.log(
+        "ℹ️  Profile combinations will be merged on-demand by the server"
       );
     }
 
@@ -86,6 +104,7 @@ function parseArgs(args) {
     noFetch: false,
     verbose: false,
     specific: null,
+    allCombinations: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -109,6 +128,10 @@ function parseArgs(args) {
       case "--verbose":
       case "-v":
         options.verbose = true;
+        break;
+
+      case "--all-combinations":
+        options.allCombinations = true;
         break;
 
       case "--bundles":
@@ -158,13 +181,15 @@ Options:
   -o, --output-dir <dir>        Output directory (default: ./compiled)
   --no-fetch                    Skip fetching extension information from marketplace
   -v, --verbose                 Enable verbose output
+  --all-combinations            Generate all profile combinations (legacy mode)
   --bundles <list>              Generate specific profile with comma-separated bundles
   --frameworks <list>           Generate specific profile with comma-separated frameworks  
   --languages <list>            Generate specific profile with comma-separated languages
   -h, --help                    Show this help message
 
 Examples:
-  node compile-profiles.mjs                                    # Generate all profiles
+  node compile-profiles.mjs                                    # Generate base profiles (recommended)
+  node compile-profiles.mjs --all-combinations                 # Generate all combinations (legacy)
   node compile-profiles.mjs --bundles ai,ui --languages js    # Generate specific profile
   node compile-profiles.mjs --no-fetch -o ./output            # Fast generation without extension info
 `);
