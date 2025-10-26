@@ -103,19 +103,12 @@ export default function Page() {
             Error loading profiles
           </div>
         )}
-        {isLoading ? (
-          <div className="w-full text-center text-gray-500">
-            Loading available profiles...
-          </div>
-        ) : (
-          <ComponentSearchBar
-            items={profiles}
-            initialChipCount={Math.min(6, profiles.length)}
-            onChange={(keys) => {
-              console.log("Selected profile combinations:", keys);
-            }}
-          />
-        )}
+
+        <ComponentSearchBar
+          items={profiles}
+          initialChipCount={Math.min(6, profiles.length)}
+          onChange={(keys) => {}}
+        />
       </div>
     </section>
   );

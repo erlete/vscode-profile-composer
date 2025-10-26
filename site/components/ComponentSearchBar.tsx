@@ -9,6 +9,7 @@ import { ClearIcon } from "./icons";
 import { redirect, RedirectType } from "next/navigation";
 import { addToast } from "@heroui/toast";
 import { motion } from "framer-motion";
+import { readSchema2 } from "@/app/lib";
 
 type Item = { key: string; label: string };
 
@@ -93,16 +94,13 @@ export default function ComponentSearchBar({
     onChange?.([]);
   }
 
-  function onSearch() {
-    redirect(
-      "/gists/" + chips.sort().join(",") + ".code-profile",
-      RedirectType.push
-    );
+  function onViewRaw() {
+    redirect("/api/compose/" + chips.toSorted().join(","), RedirectType.push);
   }
 
   async function onCopyURL() {
     setLoading2(true);
-    const url = `${window.location.origin}/gists/${chips.sort().join(",")}.code-profile`;
+    const url = `${window.location.origin}/api/compose/${chips.toSorted().join(",")}`;
     navigator.clipboard.writeText(url);
 
     // Wait for random between 0 and 1 seconds:
@@ -125,28 +123,54 @@ export default function ComponentSearchBar({
       {chipItems.length > 0 ? (
         <div className="flex flex-wrap gap-2 items-start w-full max-w-lg">
           {chipItems.map((item) => (
-            <Chip
+            <motion.div
               key={item.key}
-              onClose={() => removeChip(item.key)}
-              variant="flat"
-              className="px-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={
+                chips.length > 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }
+              }
+              transition={{ duration: 0.5 }}
+              aria-hidden={!(chips.length > 0)}
+              style={{
+                pointerEvents: chips.length > 0 ? "auto" : "none",
+              }}
             >
-              {item.label}
-            </Chip>
+              <Chip
+                onClose={() => removeChip(item.key)}
+                variant="flat"
+                className="px-2"
+              >
+                {item.label}
+              </Chip>
+            </motion.div>
           ))}
         </div>
       ) : (
         // Initial suggestions as chips when nothing selected yet
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 h-8">
           {items.slice(0, initialChipCount).map((item) => (
-            <Chip
+            <motion.div
               key={`suggest-${item.key}`}
-              className="opacity-70 cursor-pointer"
-              variant="faded"
-              onClick={() => addChip(item.key)}
+              initial={{ opacity: 0, y: -10 }}
+              animate={
+                chips.length === 0
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: -10 }
+              }
+              transition={{ duration: 0.5 }}
+              aria-hidden={!(chips.length === 0)}
+              style={{
+                pointerEvents: chips.length === 0 ? "auto" : "none",
+              }}
             >
-              {item.label}
-            </Chip>
+              <Chip
+                className="opacity-70 cursor-pointer"
+                variant="faded"
+                onClick={() => addChip(item.key)}
+              >
+                {item.label}
+              </Chip>
+            </motion.div>
           ))}
         </div>
       )}
@@ -233,9 +257,9 @@ export default function ComponentSearchBar({
           variant="bordered"
           color="primary"
           isDisabled={chips.length === 0 || loading2}
-          onPress={onSearch}
+          onPress={onViewRaw}
         >
-          Download Profile
+          View Raw Profile
         </Button>
       </motion.div>
     </div>
