@@ -38,25 +38,62 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+            <main className="container mx-auto max-w-7xl px-6 flex-grow">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://heroui.com?utm_source=next-app-template"
-                title="heroui.com homepage"
-              >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">HeroUI</p>
-              </Link>
+            <footer className="w-full py-3 text-sm flex flex-col gap-1 items-center justify-center">
+              <span className="flex items-center justify-center">
+                <p>&copy;&nbsp;</p>
+                <Link
+                  isExternal
+                  href="https://github.com/erlete"
+                  className="text-primary-500/80"
+                  size="sm"
+                >
+                  erlete
+                </Link>
+                <p>&nbsp;2025</p>
+              </span>
+              <p className="font-light text-xs">
+                Made with{" "}
+                <Link
+                  isExternal
+                  href="https://nextjs.org/"
+                  className="text-xs text-primary-500/80"
+                >
+                  Next.js
+                </Link>{" "}
+                and{" "}
+                <Link
+                  isExternal
+                  href="https://www.heroui.com/"
+                  className="text-xs text-primary-500/80"
+                >
+                  HeroUI
+                </Link>
+                . Icons from{" "}
+                <Link
+                  isExternal
+                  href="https://www.svgrepo.com/"
+                  className="text-xs text-primary-500/80"
+                >
+                  SVGRepo
+                </Link>
+                . Hosted in{" "}
+                <Link
+                  isExternal
+                  href="https://docs.github.com/pages"
+                  className="text-xs text-primary-500/80"
+                >
+                  GitHub Pages
+                </Link>{" "}
+              </p>
             </footer>
           </div>
         </Providers>

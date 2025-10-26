@@ -1,0 +1,177 @@
+"use client";
+
+import React from "react";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Chip } from "@heroui/chip";
+import { useFilter } from "@react-aria/i18n";
+import { Button } from "@heroui/button";
+import { ClearIcon } from "./icons";
+
+type Item = { key: string; label: string };
+
+export type ComponentSearchBarProps = {
+  /** Full pool of selectable items */
+  items: Item[];
+  /** Number of chips to pre-show when input is empty */
+  initialChipCount?: number; // default 5
+  /** Optional controlled value */
+  value?: string[];
+  /** Callback whenever chips change */
+  onChange?: (keys: string[]) => void;
+  /** Placeholder for the input */
+  placeholder?: string;
+  /** Label for the field */
+  label?: string;
+  /** Disable already-selected items */
+  disableSelectedOptions?: boolean; // default true
+};
+
+export default function ComponentSearchBar({
+  items,
+  initialChipCount = 5,
+  value,
+  onChange,
+  placeholder = "Search components…",
+  label = "Components",
+  disableSelectedOptions = true,
+}: ComponentSearchBarProps) {
+  const [chips, setChips] = React.useState<string[]>(value ?? []);
+  const [inputValue, setInputValue] = React.useState("");
+  const { startsWith } = useFilter({ sensitivity: "base" });
+
+  // keep internal state in sync if parent controls it
+  React.useEffect(() => {
+    if (value) setChips(value);
+  }, [value]);
+
+  const chipItems = React.useMemo(
+    () => items.filter((i) => chips.includes(i.key)),
+    [items, chips]
+  );
+
+  const availableItems = React.useMemo(
+    () => items.filter((i) => !chips.includes(i.key)),
+    [items, chips]
+  );
+
+  // Filtered items based on input
+  const filteredItems = React.useMemo(() => {
+    if (!inputValue.trim()) return availableItems;
+    return availableItems.filter((item) =>
+      startsWith(item.label, inputValue.trim())
+    );
+  }, [availableItems, inputValue, startsWith]);
+
+  // First-match logic for Enter: pick first filtered item
+  const firstMatch = React.useMemo(() => {
+    return filteredItems[0];
+  }, [filteredItems]);
+
+  function addChip(key: string | React.Key | null | undefined) {
+    if (!key) return;
+    const k = String(key);
+    if (chips.includes(k)) return;
+    const updated = [...chips, k];
+    if (!value) setChips(updated);
+    onChange?.(updated);
+    // reset field so next Enter adds the next match
+    setInputValue("");
+  }
+
+  function removeChip(key: string) {
+    const updated = chips.filter((k) => k !== key);
+    if (!value) setChips(updated);
+    onChange?.(updated);
+  }
+
+  return (
+    <div className="flex flex-col gap-3 w-full items-center justify-center">
+      {/* Selected chips */}
+      {chipItems.length > 0 ? (
+        <div className="flex flex-wrap gap-2 items-start w-full max-w-xl">
+          {chipItems.map((item) => (
+            <Chip
+              key={item.key}
+              onClose={() => removeChip(item.key)}
+              variant="flat"
+              className="px-2"
+            >
+              {item.label}
+            </Chip>
+          ))}
+        </div>
+      ) : (
+        // Initial suggestions as chips when nothing selected yet
+        <div className="flex flex-wrap gap-2">
+          {items.slice(0, initialChipCount).map((item) => (
+            <Chip
+              key={`suggest-${item.key}`}
+              className="opacity-70 cursor-pointer"
+              variant="faded"
+              onClick={() => addChip(item.key)}
+            >
+              {item.label}
+            </Chip>
+          ))}
+        </div>
+      )}
+
+      {/* Autocomplete input + listbox */}
+      <Autocomplete
+        isClearable
+        endContent={
+          chipItems.length > 0 && (
+            <Button
+              isIconOnly
+              variant="light"
+              aria-label="Clear"
+              size="lg"
+              onPress={() => {
+                chipItems.forEach((item) => removeChip(item.key));
+              }}
+            >
+              <ClearIcon
+                size={32}
+                className="w-full stroke-default-400"
+                height={24}
+              />
+            </Button>
+          )
+        }
+        label={label}
+        placeholder={placeholder}
+        inputValue={inputValue}
+        onInputChange={setInputValue}
+        fullWidth
+        items={filteredItems}
+        // Prevent selecting already chosen items from the popup
+        disabledKeys={disableSelectedOptions ? new Set(chips) : undefined}
+        allowsCustomValue={false}
+        // When user clicks an item or presses Enter on a highlighted item
+        onSelectionChange={(key) => {
+          if (key) {
+            addChip(key);
+          }
+        }}
+        listboxProps={{
+          emptyContent: "No matches found",
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && firstMatch) {
+            // If there's a first match, add it
+            e.preventDefault();
+            addChip(firstMatch.key);
+          }
+        }}
+        className="max-w-xl"
+        menuTrigger="input"
+      >
+        {(item) => (
+          <AutocompleteItem key={item.key} textValue={item.label}>
+            {item.label}
+          </AutocompleteItem>
+        )}
+      </Autocomplete>
+    </div>
+  );
+}
