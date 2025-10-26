@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "extends": {
+    "bundles": ["ui", "ai"]
+  },
+  "content": [
+    "me-dutour-mathieu.vscode-github-actions",
+    "dbaeumer.vscode-eslint",
+    "deque-systems.vscode-axe-linter",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag"
+  ]
+}
