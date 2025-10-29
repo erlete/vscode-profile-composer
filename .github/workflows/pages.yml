@@ -38,14 +38,14 @@ jobs:
       - name: Compile templates
         run: node ./compiler/index.mjs
 
-      - name: Create site public gists directory
-        run: mkdir -p site/public/gists
+      - name: Create site public fragments directory
+        run: mkdir -p site/public/fragments
 
       - name: Move compiled profiles to site
         run: |
-          rm -rf site/public/gists/*
-          cp compiled/*.code-profile site/public/gists/ 2>/dev/null || true
-          cp compiled/manifest.json site/public/gists/ 2>/dev/null || true
+          rm -rf site/public/fragments/*
+          cp compiled/*.code-profile site/public/fragments/ 2>/dev/null || true
+          cp compiled/manifest.json site/public/fragments/ 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
