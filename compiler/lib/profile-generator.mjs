@@ -1,6 +1,6 @@
 import { TemplateResolver } from "./template-resolver.mjs";
 import { ProfileCompiler } from "./profile-compiler.mjs";
-import { validateGitRepository } from "./validate-git-repository.mjs";
+import { validateGitRepository } from "./validators.mjs";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -319,7 +319,7 @@ export class ProfileGenerator {
         size: stats.size,
         created: stats.birthtime.toISOString(),
         modified: stats.mtime.toISOString(),
-        extensionCount: profile.extensions?.length || 0,
+        extensionCount: JSON.parse(profile.extensions || "[]").length,
         settingCount: Object.keys(profile.settings || {}).length,
         components: {
           hasExtensions: !!profile.extensions?.length,

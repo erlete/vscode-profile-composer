@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { validateTemplates } from "./validators.mjs";
 
 /**
  * Template resolver - handles dependency resolution and template merging
@@ -9,6 +10,7 @@ import path from "path";
 export class TemplateResolver {
   constructor(templatesDir) {
     this.templatesDir = templatesDir;
+    validateTemplates(templatesDir);
     this.cache = new Map();
     this.resolveStack = new Set(); // For circular dependency detection
   }

@@ -3,6 +3,7 @@
 import fs from "fs/promises";
 import { constants as fsConstants } from "fs";
 import path from "path";
+import { validateGitRepository } from "../compiler/lib/validators.mjs";
 
 // move-profiles-to-site.mjs
 // Moves *.code-profile and manifest.json from ./compiled -> ./site/public/fragments
@@ -10,6 +11,8 @@ import path from "path";
 // - clears previous contents in destination
 // - preserves relative paths from compiled
 // Note: when running this script as part of repository edits, run codacy_cli_analyze as required by your tooling.
+
+validateGitRepository();
 
 const SRC_DIR = path.resolve(process.cwd(), "compiled");
 const DEST_DIR = path.resolve(process.cwd(), "site", "public", "fragments");

@@ -2,6 +2,7 @@
 
 import { promises as fs } from "fs";
 import path from "path";
+import { validateGitRepository } from "../compiler/lib/validators.mjs";
 
 /**
  * Manifest reader utility - displays profile generation information
@@ -121,4 +122,5 @@ function formatFileSize(bytes) {
 const manifestPath = process.argv[2];
 
 // Run the manifest reader
+validateGitRepository();
 readManifest(manifestPath);
