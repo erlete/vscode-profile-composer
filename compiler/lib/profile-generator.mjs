@@ -301,7 +301,7 @@ export class ProfileGenerator {
       const filename = `${profileName.replace(
         /[^a-zA-Z0-9-_]/g,
         ","
-      )}.code-profile`;
+      )}.code-profile`.toLowerCase();
       const filepath = path.join(targetDir, filename);
 
       // Write profile file

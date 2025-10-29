@@ -200,7 +200,10 @@ export function composeProfile(fragmentNames: string[]): object {
   // Load all profile fragments:
   const fragments = fragmentNames.map((fragment) =>
     JSON.parse(
-      readFileSync(join(FRAGMENTS_DIR, `${fragment}.code-profile`), 'utf-8')
+      readFileSync(
+        join(FRAGMENTS_DIR, `${fragment.toLowerCase()}.code-profile`),
+        'utf-8'
+      )
     )
   )
 
