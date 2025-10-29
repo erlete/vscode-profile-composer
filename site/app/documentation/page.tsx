@@ -18,6 +18,8 @@ import {
   RiRocketLine,
 } from "@remixicon/react";
 
+export const dynamic = "force-static";
+
 /**
  * Documentation page.
  *

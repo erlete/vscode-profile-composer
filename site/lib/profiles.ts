@@ -176,11 +176,11 @@ function deepMerge(target: any, source: any): any {
 // region Profiles
 
 /**
- * Read schema (profile fragments) names from the manifest.
+ * Read fragment (profile fragments) names from the manifest.
  *
- * @returns {string[]} - List of all schema names present on the manifest.
+ * @returns {string[]} - List of all fragment names present on the manifest.
  */
-export function readManifestSchemaNames(): string[] {
+export function readManifestFragmentNames(): string[] {
   return (
     JSON.parse(readFileSync(MANIFEST_FILE, "utf-8")).profiles.map(
       (m: any) => m.name

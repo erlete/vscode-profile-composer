@@ -6,7 +6,6 @@ import { Navbar } from "@/components/navbar";
 import { fontSans } from "@/site.config";
 export { metadata, viewport } from "@/site.config";
 
-export const revalidate = 0;
 export const dynamic = "force-static";
 
 /**
