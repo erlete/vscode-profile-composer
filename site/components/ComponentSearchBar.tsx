@@ -5,11 +5,10 @@ import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Chip } from "@heroui/chip";
 import { useFilter } from "@react-aria/i18n";
 import { Button } from "@heroui/button";
-import { ClearIcon } from "./icons";
 import { redirect, RedirectType } from "next/navigation";
 import { addToast } from "@heroui/toast";
 import { motion } from "framer-motion";
-import { readSchema2 } from "@/app/lib";
+import { RiCloseCircleLine } from "@remixicon/react";
 
 type Item = { key: string; label: string };
 
@@ -118,10 +117,10 @@ export default function ComponentSearchBar({
   }
 
   return (
-    <div className="flex flex-col gap-3 w-full items-center justify-center">
+    <div className="flex flex-col gap-3 w-full items-center justify-start h-full">
       {/* Selected chips */}
       {chipItems.length > 0 ? (
-        <div className="flex flex-wrap gap-2 items-start w-full max-w-lg">
+        <div className="flex flex-wrap gap-2 items-start w-full max-w-lg min-h-8">
           {chipItems.map((item) => (
             <motion.div
               key={item.key}
@@ -147,7 +146,7 @@ export default function ComponentSearchBar({
         </div>
       ) : (
         // Initial suggestions as chips when nothing selected yet
-        <div className="flex flex-wrap gap-2 h-8">
+        <div className="flex flex-wrap gap-2 min-h-8">
           {items.slice(0, initialChipCount).map((item) => (
             <motion.div
               key={`suggest-${item.key}`}
@@ -177,7 +176,11 @@ export default function ComponentSearchBar({
 
       {/* Autocomplete input + listbox */}
       <Autocomplete
-        isClearable
+        popoverProps={{
+          placement: "bottom",
+          shouldFlip: false,
+        }}
+        isClearable={false} // Disable clear for typing.
         endContent={
           chipItems.length > 0 && (
             <Button
@@ -187,11 +190,7 @@ export default function ComponentSearchBar({
               size="lg"
               onPress={removeAllChips}
             >
-              <ClearIcon
-                size={32}
-                className="w-full stroke-default-400"
-                height={24}
-              />
+              <RiCloseCircleLine size={24} className="text-default-400" />
             </Button>
           )
         }
@@ -213,15 +212,8 @@ export default function ComponentSearchBar({
         listboxProps={{
           emptyContent: "No matches found",
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && firstMatch) {
-            // If there's a first match, add it
-            e.preventDefault();
-            addChip(firstMatch.key);
-          }
-        }}
         className="w-full max-w-lg"
-        menuTrigger="input"
+        menuTrigger="focus"
       >
         {(item) => (
           <AutocompleteItem key={item.key} textValue={item.label}>
@@ -229,6 +221,7 @@ export default function ComponentSearchBar({
           </AutocompleteItem>
         )}
       </Autocomplete>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={
@@ -245,7 +238,7 @@ export default function ComponentSearchBar({
         <Button
           fullWidth
           isLoading={loading2}
-          variant="solid"
+          variant="ghost"
           color="primary"
           isDisabled={chips.length === 0 || loading2}
           onPress={onCopyURL}
@@ -254,7 +247,7 @@ export default function ComponentSearchBar({
         </Button>
         <Button
           fullWidth
-          variant="bordered"
+          variant="flat"
           color="primary"
           isDisabled={chips.length === 0 || loading2}
           onPress={onViewRaw}

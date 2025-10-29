@@ -7,16 +7,65 @@ import {
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
-
-import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { GithubIcon } from "@/components/icons";
 import { Divider } from "@heroui/divider";
 import Image from "next/image";
+import { applicationConfig } from "@/site.config";
+import { RiBook2Fill, RiGithubFill } from "@remixicon/react";
 
-export const Navbar = () => {
+/**
+ * Navbar content for desktop views.
+ *
+ * @returns {JSX.Element} The desktop navbar content.
+ */
+const DesktopNavbar = (): JSX.Element => (
+  <NavbarContent
+    className="hidden sm:flex basis-1/5 sm:basis-full"
+    justify="end"
+  >
+    <NavbarItem className="hidden sm:flex gap-2">
+      <Link aria-label="Documentation" href="/documentation">
+        <RiBook2Fill size={28} className="text-default-500" />
+      </Link>
+      <Link
+        isExternal
+        aria-label="Github"
+        href={applicationConfig.links.github}
+      >
+        <RiGithubFill size={28} className="text-default-500" />
+      </Link>
+      <ThemeSwitch />
+    </NavbarItem>
+  </NavbarContent>
+);
+
+/**
+ * Navbar content for mobile views.
+ *
+ * @returns {JSX.Element} The mobile navbar content.
+ */
+const MobileNavbar = (): JSX.Element => (
+  <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+    <Link aria-label="Documentation" href="/documentation">
+      <RiBook2Fill size={28} className="text-default-500" />
+    </Link>
+    <Link isExternal aria-label="Github" href={applicationConfig.links.github}>
+      <RiGithubFill size={28} className="text-default-500" />
+    </Link>
+    <ThemeSwitch />
+    <NavbarMenuToggle />
+  </NavbarContent>
+);
+
+/**
+ * Main Navbar component.
+ *
+ * @returns {JSX.Element} The Navbar element.
+ */
+export const Navbar = (): JSX.Element => {
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
+      {/* Brand and title */}
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink
@@ -24,7 +73,6 @@ export const Navbar = () => {
             href="https://erlete.dev"
             target="_blank"
           >
-            {/* <Logo /> */}
             <Image
               src="https://static.erlete.dev/media/images/logo.png"
               alt="Profile image"
@@ -41,25 +89,9 @@ export const Navbar = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
-          <ThemeSwitch />
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle />
-      </NavbarContent>
+      {/* Content: */}
+      <DesktopNavbar />
+      <MobileNavbar />
     </HeroUINavbar>
   );
 };

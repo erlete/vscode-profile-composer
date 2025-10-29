@@ -1,10 +1,10 @@
 "use client";
 
-import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
-
 import React, { useEffect, useState } from "react";
 import ComponentSearchBar from "@/components/ComponentSearchBar";
+import { applicationConfig } from "@/site.config";
+import { motion } from "framer-motion";
 
 interface ProfileManifest {
   generated: string;
@@ -43,7 +43,7 @@ export default function Page() {
     async function fetchManifest() {
       try {
         setIsLoading(true);
-        const response = await fetch("/gists/manifest.json");
+        const response = await fetch("/fragments/manifest.json");
 
         if (!response.ok) {
           throw new Error(`Failed to fetch manifest: ${response.statusText}`);
@@ -83,8 +83,18 @@ export default function Page() {
   }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 h-full">
-      <div className="inline-block max-w-xl text-center justify-center">
+    <section className="grid grid-rows-2 h-full items-center justify-center gap-4 py-8 md:py-10 h-full">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{
+          opacity: 1,
+          transition: {
+            duration: 0.5,
+            ease: "easeOut",
+          },
+        }}
+        className="inline-block max-w-xl text-center items-center place-self-end"
+      >
         <span className={title()}>VSCode&nbsp;</span>
         <span className={title({ color: "violet" })}>Profile&nbsp;</span>
         <span className={title()}>Composer</span>
@@ -93,22 +103,29 @@ export default function Page() {
             class: "mt-4 font-light text-sm",
           })}
         >
-          {siteConfig.description}
+          {applicationConfig.description}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col h-full place-content-start">
         {error && (
           <div className="w-full text-center text-red-500 mb-4">
             Error loading profiles
           </div>
         )}
 
-        <ComponentSearchBar
-          items={profiles}
-          initialChipCount={Math.min(6, profiles.length)}
-          onChange={(keys) => {}}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75 }}
+          className="h-full"
+        >
+          <ComponentSearchBar
+            items={profiles}
+            initialChipCount={Math.min(6, profiles.length)}
+            onChange={(keys) => {}}
+          />
+        </motion.div>
       </div>
     </section>
   );
