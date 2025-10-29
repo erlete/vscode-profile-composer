@@ -1,7 +1,7 @@
 import { TemplateResolver } from "./template-resolver.mjs";
 import { ProfileCompiler } from "./profile-compiler.mjs";
 import { validateGitRepository } from "./validators.mjs";
-import { promises as fs } from "fs";
+import { existsSync, promises as fs } from "fs";
 import path from "path";
 
 /**
@@ -287,7 +287,10 @@ export class ProfileGenerator {
   async saveProfiles(profiles, outputDir = null) {
     const targetDir = outputDir || this.outputDir;
 
-    // Ensure output directory exists
+    // Ensure output directory exists and clear it if existent:
+    if (existsSync(targetDir)) {
+      await fs.rm(targetDir, { force: true, recursive: true });
+    }
     await fs.mkdir(targetDir, { recursive: true });
 
     const manifest = {

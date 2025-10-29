@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "fs/promises";
-import { constants as fsConstants } from "fs";
+import { existsSync, constants as fsConstants } from "fs";
 import path from "path";
 import { validateGitRepository } from "../compiler/lib/validators.mjs";
 
@@ -32,7 +32,9 @@ async function ensureDir(p) {
 
 async function clearDir(p) {
   // Remove and recreate to ensure a clean directory
-  await fs.rm(p, { force: true, recursive: true });
+  if (existsSync(p)) {
+    await fs.rm(p, { force: true, recursive: true });
+  }
   await ensureDir(p);
 }
 
