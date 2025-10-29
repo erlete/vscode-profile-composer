@@ -1,64 +1,109 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+// region Configuration
+
 /**
- * Read JSON data from public/gists directory
+ * Path to the directory containing profile fragments.
  */
-export function readManifest(): string[] {
-  const publicDir = join(process.cwd(), "public", "gists");
-  const manifestData = JSON.parse(
-    readFileSync(join(publicDir, "manifest.json"), "utf-8")
-  );
+export const FRAGMENTS_DIR = join(process.cwd(), "public", "fragments");
 
-  const names: string[] = manifestData.profiles.map((m: any) => m.name);
-  const paths: string[] = [...names].sort((a, b) => a.localeCompare(b));
+/**
+ * Path to the file profile fragments manifest.
+ */
+export const MANIFEST_FILE = join(
+  process.cwd(),
+  "public",
+  "fragments",
+  "manifest.json"
+);
 
-  return paths;
+// region Helpers
+
+/**
+ * Removes any kind of JSON comments from a string.
+ *
+ * @param {string} jsonString - The JSON string potentially containing comments.
+ * @returns {string} - The JSON string with comments removed.
+ */
+function removeJsonComments(jsonString: string): string {
+  return jsonString
+    .replace(/\/\/.*$/gm, "") // Remove single-line comments (// comment)
+    .replace(/\/\*[\s\S]*?\*\//g, "") // Remove multi-line comments (/* comment */)
+    .replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas before closing brackets
 }
 
 /**
- * Given a list of params, generate the permutation list.
+ * Parses and unescapes JSON strings that may be double-encoded.
  *
- * If the input value is, say, ['a', 'b', 'c'], the output should be:
- * ['a', 'b', 'c', 'a,b', 'a,c', 'b,c', 'a,b,c', 'b,c,a', ...].
- *
- * @param {string[]} schemas
- * @returns {string[]}
+ * @param {string} jsonString - The JSON string to parse.
+ * @returns {any} - The parsed JSON object.
  */
-export function paramCombinations(schemas: string[]): string[] {
-  if (!schemas || schemas.length === 0) return [];
+function parseNestedJson(jsonString: string): any {
+  try {
+    // Parse the outer JSON string:
+    let parsed = JSON.parse(jsonString);
 
-  // Ensure input is sorted so combinations are canonical (e.g. "default,devops")
-  const sorted = [...schemas].sort();
-  const n = sorted.length;
-  const total = 1 << n;
-  const results = new Set<string>();
-
-  for (let mask = 1; mask < total; mask++) {
-    const combo: string[] = [];
-    for (let j = 0; j < n; j++) {
-      if (mask & (1 << j)) combo.push(sorted[j]);
+    // If the result is still a string, parse it again and remove comments:
+    if (typeof parsed === "string") {
+      const cleaned = removeJsonComments(parsed);
+      parsed = JSON.parse(cleaned);
     }
-    results.add(combo.join(","));
+
+    return parsed;
+  } catch (error: any) {
+    console.warn("Failed to parse JSON:", error.message);
+    return {};
+  }
+}
+
+/**
+ * Recursively parses JSON string values in an object.
+ *
+ * @param {any} obj - The object to parse.
+ * @returns {any} - The object with JSON strings parsed.
+ */
+function parseJsonStringsInObject(obj: any): any {
+  // Handle JSON arrays:
+  if (Array.isArray(obj)) {
+    return obj.map((item) => parseJsonStringsInObject(item));
   }
 
-  return Array.from(results);
+  if (obj && typeof obj === "object") {
+    const result: any = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (
+        typeof value === "string" &&
+        (value.startsWith("[") || value.startsWith("{"))
+      ) {
+        // Try to parse the string as JSON or keep original string:
+        try {
+          result[key] = JSON.parse(value);
+        } catch (error) {
+          result[key] = value;
+        }
+      } else if (typeof value === "object" && value !== null) {
+        // Recursively process nested objects:
+        result[key] = parseJsonStringsInObject(value);
+      } else {
+        // Keep primitive values as-is:
+        result[key] = value;
+      }
+    }
+
+    return result;
+  }
+
+  return obj;
 }
 
 /**
- * Read JSON data from public/gists directory
- */
-export function readSchema(fileName: string) {
-  const publicDir = join(process.cwd(), "public", "gists");
-  const customData = JSON.parse(
-    readFileSync(join(publicDir, fileName), "utf-8")
-  );
-
-  return customData;
-}
-
-/**
- * Deeply merges two objects without duplicating properties
+ * Deeply merges two fragments without duplicating properties.
+ *
+ * @param {any} target - The target fragment object.
+ * @param {any} source - The source fragment object.
+ * @returns {any} - The merged fragment object.
  */
 function deepMerge(target: any, source: any): any {
   const result = { ...target };
@@ -70,7 +115,8 @@ function deepMerge(target: any, source: any): any {
         typeof source[key] === "object" &&
         !Array.isArray(source[key])
       ) {
-        // If both target and source have the same key and both are objects, merge recursively
+        // If both target and source have the same key and both are objects,
+        // merge recursively:
         if (
           result[key] &&
           typeof result[key] === "object" &&
@@ -81,13 +127,12 @@ function deepMerge(target: any, source: any): any {
           result[key] = { ...source[key] };
         }
       } else if (Array.isArray(source[key])) {
-        // Handle arrays - merge and deduplicate
+        // Handle arrays (merge and deduplicate):
         if (Array.isArray(result[key])) {
-          // Merge arrays and remove duplicates for extension objects
           const merged = [...result[key]];
 
           for (const item of source[key]) {
-            // Check if item already exists (for extensions, check by identifier.id)
+            // Check if item already exists:
             let exists = false;
 
             if (
@@ -96,14 +141,14 @@ function deepMerge(target: any, source: any): any {
               item.identifier &&
               item.identifier.id
             ) {
-              // Extension object - check by identifier.id
+              // Extension object (check by identifier.id):
               exists = merged.some(
                 (existing: any) =>
                   existing.identifier &&
                   existing.identifier.id === item.identifier.id
               );
             } else {
-              // Simple value - check direct equality
+              // Simple value (check direct equality):
               exists = merged.some(
                 (existing: any) =>
                   JSON.stringify(existing) === JSON.stringify(item)
@@ -119,7 +164,7 @@ function deepMerge(target: any, source: any): any {
           result[key] = [...source[key]];
         }
       } else {
-        // Primitive value - source overwrites target
+        // Primitive value (source overwrites target):
         result[key] = source[key];
       }
     }
@@ -128,104 +173,45 @@ function deepMerge(target: any, source: any): any {
   return result;
 }
 
+// region Profiles
+
 /**
- * Removes JSON comments from a string
+ * Read schema (profile fragments) names from the manifest.
+ *
+ * @returns {string[]} - List of all schema names present on the manifest.
  */
-function removeJsonComments(jsonString: string): string {
-  // Remove single-line comments (// comment)
-  let cleaned = jsonString.replace(/\/\/.*$/gm, "");
-
-  // Remove multi-line comments (/* comment */)
-  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, "");
-
-  // Remove trailing commas before closing brackets
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, "$1");
-
-  return cleaned;
+export function readManifestSchemaNames(): string[] {
+  return (
+    JSON.parse(readFileSync(MANIFEST_FILE, "utf-8")).profiles.map(
+      (m: any) => m.name
+    ) as string[]
+  ).toSorted();
 }
 
 /**
- * Parses and unescapes JSON strings that may be double-encoded
+ * Composes a profile from one or more fragments.
+ *
+ * @param {string[]} fragmentNames - Array of fragment names to compose the profile from.
+ * @returns {object} - The composed profile object.
  */
-function parseNestedJson(jsonString: string): any {
-  try {
-    // First, parse the outer JSON string
-    let parsed = JSON.parse(jsonString);
-
-    // If the result is still a string, parse it again (may contain comments)
-    if (typeof parsed === "string") {
-      const cleaned = removeJsonComments(parsed);
-      parsed = JSON.parse(cleaned);
-    }
-
-    return parsed;
-  } catch (error: any) {
-    console.warn("Failed to parse JSON:", error.message);
-    return {};
-  }
-}
-
-/**
- * Recursively parses JSON string values in an object
- */
-function parseJsonStringsInObject(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => parseJsonStringsInObject(item));
-  }
-
-  if (obj && typeof obj === "object") {
-    const result: any = {};
-    for (const [key, value] of Object.entries(obj)) {
-      if (
-        typeof value === "string" &&
-        (value.startsWith("[") || value.startsWith("{"))
-      ) {
-        try {
-          // Try to parse the string as JSON
-          result[key] = JSON.parse(value);
-        } catch (error) {
-          // If parsing fails, keep the original string
-          result[key] = value;
-        }
-      } else if (typeof value === "object" && value !== null) {
-        // Recursively process nested objects
-        result[key] = parseJsonStringsInObject(value);
-      } else {
-        // Keep primitive values as-is
-        result[key] = value;
-      }
-    }
-    return result;
-  }
-
-  return obj;
-}
-
-/**
- * Merges multiple VS Code profiles into a single profile
- */
-export function readSchema2(fileName: string | string[]) {
-  // Handle both array and string inputs
-  const fragments = Array.isArray(fileName)
-    ? fileName
-    : fileName.replace(".code-profile", "").split(",");
-  const publicDir = join(process.cwd(), "public", "gists");
-
-  // Load all profile fragments
-  const profiles = fragments.map((fragment) =>
+export function composeProfile(fragmentNames: string[]): object {
+  // Load all profile fragments:
+  const fragments = fragmentNames.map((fragment) =>
     JSON.parse(
-      readFileSync(join(publicDir, `${fragment}.code-profile`), "utf-8")
+      readFileSync(join(FRAGMENTS_DIR, `${fragment}.code-profile`), "utf-8")
     )
   );
 
-  // If only one profile, return it directly
-  if (profiles.length === 1) {
-    return profiles[0];
-  }
+  // If only one profile, return it directly:
+  if (fragments.length === 1)
+    return {
+      ...fragments[0],
+      name: `VSCode Profile Composer (${fragmentNames.join(",").toLowerCase()})`,
+    };
 
   // Initialize merged data structures
   const merged = {
-    name: `VSCode Profile Composer (${fragments.join(",")})`,
+    name: `VSCode Profile Composer (${fragmentNames.join(",").toLowerCase()})`,
     settings: {},
     keybindings: [],
     tasks: {},
@@ -234,14 +220,10 @@ export function readSchema2(fileName: string | string[]) {
     snippets: {},
   };
 
-  console.log(`Merging ${profiles.length} profiles: ${fragments.join(", ")}`);
-
-  // Process each profile
-  for (let i = 0; i < profiles.length; i++) {
-    const profile = profiles[i];
-    const fragmentName = fragments[i];
-
-    console.log(`Processing profile ${fragmentName}...`);
+  // Process each profile:
+  for (let i = 0; i < fragments.length; i++) {
+    const profile = fragments[i];
+    const fragmentName = fragmentNames[i];
 
     try {
       // Process each key in the profile
@@ -398,12 +380,8 @@ export function readSchema2(fileName: string | string[]) {
     }
   }
 
-  console.log(
-    `Successfully merged ${profiles.length} profiles into: ${merged.name}`
-  );
-
-  // Convert back to VS Code profile format (JSON strings)
-  const result = {
+  // Convert back to VS Code profile format (JSON strings):
+  return {
     name: merged.name,
     extensions: JSON.stringify(merged.extensions),
     settings: JSON.stringify({ settings: JSON.stringify(merged.settings) }),
@@ -412,6 +390,4 @@ export function readSchema2(fileName: string | string[]) {
     snippets: JSON.stringify(merged.snippets),
     globalState: JSON.stringify(merged.globalState),
   };
-
-  return result;
 }
