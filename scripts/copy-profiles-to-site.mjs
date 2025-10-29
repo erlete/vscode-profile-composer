@@ -5,8 +5,8 @@ import { constants as fsConstants } from "fs";
 import path from "path";
 import { validateGitRepository } from "../compiler/lib/validators.mjs";
 
-// move-profiles-to-site.mjs
-// Moves *.code-profile and manifest.json from ./compiled -> ./site/public/fragments
+// copy-profiles-to-site.mjs
+// Copies *.code-profile and manifest.json from ./compiled -> ./site/public/fragments
 // - creates destination dirs if missing
 // - clears previous contents in destination
 // - preserves relative paths from compiled
@@ -47,19 +47,9 @@ async function* walk(dir) {
   }
 }
 
-async function moveFile(src, dest) {
+async function copyFile(src, dest) {
   await ensureDir(path.dirname(dest));
-  try {
-    await fs.rename(src, dest);
-  } catch (err) {
-    // cross-device rename may fail; fall back to copy+unlink
-    if (err.code === "EXDEV" || err.code === "EINVAL") {
-      await fs.copyFile(src, dest);
-      await fs.unlink(src);
-    } else {
-      throw err;
-    }
-  }
+  await fs.copyFile(src, dest);
 }
 
 function matches(filePath) {
@@ -75,16 +65,16 @@ async function main() {
 
   await clearDir(DEST_DIR);
 
-  let moved = 0;
+  let copied = 0;
   for await (const filePath of walk(SRC_DIR)) {
     if (!matches(filePath)) continue;
     const rel = path.relative(SRC_DIR, filePath);
     const dest = path.join(DEST_DIR, rel);
-    await moveFile(filePath, dest);
-    moved++;
+    await copyFile(filePath, dest);
+    copied++;
   }
 
-  console.log(`Moved ${moved} file(s) from ${SRC_DIR} -> ${DEST_DIR}`);
+  console.log(`Copied ${copied} file(s) from ${SRC_DIR} -> ${DEST_DIR}`);
 }
 
 main().catch((err) => {
