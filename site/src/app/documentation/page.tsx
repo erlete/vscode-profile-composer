@@ -1,12 +1,10 @@
-"use client";
+'use client'
 
-import { title, subtitle } from "@/components/primitives";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Link } from "@heroui/link";
-import { Divider } from "@heroui/divider";
-import { motion } from "framer-motion";
-import { applicationConfig } from "@/site.config";
+import { Card, CardBody, CardHeader } from '@heroui/card'
+import { Chip } from '@heroui/chip'
+import { Link } from '@heroui/link'
+import { Divider } from '@heroui/divider'
+import { motion } from 'framer-motion'
 import {
   RiGithubFill,
   RiLightbulbLine,
@@ -16,9 +14,12 @@ import {
   RiCodeSLine,
   RiUserLine,
   RiRocketLine,
-} from "@remixicon/react";
+} from '@remixicon/react'
 
-export const dynamic = "force-static";
+import { applicationConfig } from '@/site.config'
+import { title, subtitle } from '@/components/primitives'
+
+export const dynamic = 'force-static'
 
 /**
  * Documentation page.
@@ -30,15 +31,15 @@ export default function Page(): JSX.Element {
     <div className="max-w-4xl mx-auto py-8 space-y-8">
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
         className="text-center space-y-4"
+        initial={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.6 }}
       >
         <div className="inline-block">
-          <span className={title({ size: "lg" })}>Documentation</span>
+          <span className={title({ size: 'lg' })}>Documentation</span>
         </div>
-        <div className={subtitle({ class: "text-center mx-auto" })}>
+        <div className={subtitle({ class: 'text-center mx-auto' })}>
           Learn how to use VSCode Profile Composer to create custom development
           environments
         </div>
@@ -48,14 +49,14 @@ export default function Page(): JSX.Element {
         {/* What is VSCode Profile Composer */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <Card className="p-6">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <RiLightbulbLine size={24} className="text-primary" />
+                <RiLightbulbLine className="text-primary" size={24} />
                 <h2 className="text-2xl font-semibold">
                   What is VSCode Profile Composer?
                 </h2>
@@ -71,19 +72,19 @@ export default function Page(): JSX.Element {
                 ready-to-use profiles tailored to your needs.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Chip size="sm" variant="flat" color="primary">
+                <Chip color="primary" size="sm" variant="flat">
                   Extensions
                 </Chip>
-                <Chip size="sm" variant="flat" color="secondary">
+                <Chip color="secondary" size="sm" variant="flat">
                   Settings
                 </Chip>
-                <Chip size="sm" variant="flat" color="success">
+                <Chip color="success" size="sm" variant="flat">
                   Keybindings
                 </Chip>
-                <Chip size="sm" variant="flat" color="warning">
+                <Chip color="warning" size="sm" variant="flat">
                   Tasks
                 </Chip>
-                <Chip size="sm" variant="flat" color="danger">
+                <Chip color="danger" size="sm" variant="flat">
                   Snippets
                 </Chip>
               </div>
@@ -94,14 +95,14 @@ export default function Page(): JSX.Element {
         {/* How to Use */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <Card className="p-6">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <RiRocketLine size={24} className="text-secondary" />
+                <RiRocketLine className="text-secondary" size={24} />
                 <h2 className="text-2xl font-semibold">How to Use</h2>
               </div>
             </CardHeader>
@@ -138,10 +139,10 @@ export default function Page(): JSX.Element {
                       Generate Your Profile
                     </h3>
                     <p className="text-default-600">
-                      Click the <b>"Copy Profile URL"</b> button to directly
-                      copy the generated profile contents or click on{" "}
-                      <b>"View Raw Profile"</b> to access the contents of the
-                      URL mentioned before. There, you will see the final
+                      Click the <b>&quot;Copy Profile URL&quot;</b> button to
+                      directly copy the generated profile contents or click on{' '}
+                      <b>&quot;View Raw Profile&quot;</b> to access the contents
+                      of the URL mentioned before. There, you will see the final
                       profile composed from the segments you have selected.
                     </p>
                   </div>
@@ -162,39 +163,39 @@ export default function Page(): JSX.Element {
 
                     <div className="w-full bg-default-100 border border-default-200 p-4 rounded-lg mb-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <Chip size="sm" color="success" variant="flat">
+                        <Chip color="success" size="sm" variant="flat">
                           Primary method
                         </Chip>
                       </div>
                       <p className="text-sm font-mono text-default-700">
                         <span className="font-semibold">
                           Open the Command Palette
-                        </span>{" "}
-                        →{" "}
+                        </span>{' '}
+                        →{' '}
                         <span className="text-primary">
                           Profiles: Import Profile...
-                        </span>{" "}
+                        </span>{' '}
                         → Paste the URL to the generated profile
                       </p>
                     </div>
 
                     <div className="w-full bg-default-100/50 p-4 rounded-lg">
                       <div className="flex items-center gap-2 mb-3">
-                        <Chip size="sm" color="warning" variant="flat">
+                        <Chip color="warning" size="sm" variant="flat">
                           Alternative method
                         </Chip>
                       </div>
                       <p className="text-sm font-mono text-default-600">
                         <span className="font-semibold">
                           Open the Command Palette
-                        </span>{" "}
-                        →{" "}
+                        </span>{' '}
+                        →{' '}
                         <span className="text-primary">
                           Preferences: Open Profiles (UI)
-                        </span>{" "}
-                        → Next to the "New Profile" button, click on the
-                        dropdown menu →{" "}
-                        <span className="text-primary">Import Profile...</span>{" "}
+                        </span>{' '}
+                        → Next to the &quot;New Profile&quot; button, click on
+                        the dropdown menu →{' '}
+                        <span className="text-primary">Import Profile...</span>{' '}
                         → Paste the URL to the generated profile
                       </p>
                     </div>
@@ -208,14 +209,14 @@ export default function Page(): JSX.Element {
         {/* Available Components */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <Card className="p-6">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <RiPuzzleLine size={24} className="text-warning" />
+                <RiPuzzleLine className="text-warning" size={24} />
                 <h2 className="text-2xl font-semibold">
                   Available Profile Components
                 </h2>
@@ -290,14 +291,14 @@ export default function Page(): JSX.Element {
         {/* Important Notice */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <Card className="p-6 border-l-4 border-l-warning">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <RiUserLine size={24} className="text-warning" />
+                <RiUserLine className="text-warning" size={24} />
                 <h2 className="text-2xl font-semibold text-warning">
                   Important Notice
                 </h2>
@@ -323,24 +324,24 @@ export default function Page(): JSX.Element {
                   </h3>
                   <p className="text-default-600 mb-3">
                     You can deploy your own version of VSCode Profile Composer
-                    with custom profile fragments tailored to your team's needs
-                    or personal preferences.
+                    with custom profile fragments tailored to your team&apos;s
+                    needs or personal preferences.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Link
-                      href={applicationConfig.links.github}
                       isExternal
                       className="inline-flex items-center gap-2 text-sm"
                       color="primary"
+                      href={applicationConfig.links.github}
                     >
                       <RiGithubFill size={16} />
                       View Repository
                     </Link>
                     <Link
-                      href={`${applicationConfig.links.github}#readme`}
                       isExternal
                       className="inline-flex items-center gap-2 text-sm"
                       color="secondary"
+                      href={`${applicationConfig.links.github}#readme`}
                     >
                       <RiDownloadLine size={16} />
                       Setup Instructions
@@ -355,14 +356,14 @@ export default function Page(): JSX.Element {
         {/* Technical Details */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <Card className="p-6">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <RiSettings3Line size={24} className="text-danger" />
+                <RiSettings3Line className="text-danger" size={24} />
                 <h2 className="text-2xl font-semibold">Technical Details</h2>
               </div>
             </CardHeader>
@@ -408,5 +409,5 @@ export default function Page(): JSX.Element {
         </motion.div>
       </div>
     </div>
-  );
+  )
 }

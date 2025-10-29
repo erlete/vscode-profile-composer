@@ -4,14 +4,15 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-} from "@heroui/navbar";
-import { Link } from "@heroui/link";
-import NextLink from "next/link";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { Divider } from "@heroui/divider";
-import Image from "next/image";
-import { applicationConfig } from "@/site.config";
-import { RiBook2Fill, RiGithubFill } from "@remixicon/react";
+} from '@heroui/navbar'
+import { Link } from '@heroui/link'
+import NextLink from 'next/link'
+import { Divider } from '@heroui/divider'
+import Image from 'next/image'
+import { RiBook2Fill, RiGithubFill } from '@remixicon/react'
+
+import { applicationConfig } from '@/site.config'
+import { ThemeSwitch } from '@/components/theme-switch'
 
 /**
  * Navbar content for desktop views.
@@ -25,19 +26,19 @@ const DesktopNavbar = (): JSX.Element => (
   >
     <NavbarItem className="hidden sm:flex gap-2">
       <Link aria-label="Documentation" href="/documentation">
-        <RiBook2Fill size={28} className="text-default-500" />
+        <RiBook2Fill className="text-default-500" size={28} />
       </Link>
       <Link
         isExternal
         aria-label="Github"
         href={applicationConfig.links.github}
       >
-        <RiGithubFill size={28} className="text-default-500" />
+        <RiGithubFill className="text-default-500" size={28} />
       </Link>
       <ThemeSwitch />
     </NavbarItem>
   </NavbarContent>
-);
+)
 
 /**
  * Navbar content for mobile views.
@@ -47,15 +48,15 @@ const DesktopNavbar = (): JSX.Element => (
 const MobileNavbar = (): JSX.Element => (
   <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
     <Link aria-label="Documentation" href="/documentation">
-      <RiBook2Fill size={28} className="text-default-500" />
+      <RiBook2Fill className="text-default-500" size={28} />
     </Link>
     <Link isExternal aria-label="Github" href={applicationConfig.links.github}>
-      <RiGithubFill size={28} className="text-default-500" />
+      <RiGithubFill className="text-default-500" size={28} />
     </Link>
     <ThemeSwitch />
     <NavbarMenuToggle />
   </NavbarContent>
-);
+)
 
 /**
  * Main Navbar component.
@@ -74,15 +75,15 @@ export const Navbar = (): JSX.Element => {
             target="_blank"
           >
             <Image
-              src="https://static.erlete.dev/media/images/logo.png"
               alt="Profile image"
               className="rounded-full mr-1 invert dark:filter-none"
-              width={32}
               height={32}
+              src="https://static.erlete.dev/media/images/logo.png"
+              width={32}
             />
             <p className="font-bold text-inherit">erlete.dev</p>
           </NextLink>
-          <Divider orientation="vertical" className="h-6" />
+          <Divider className="h-6" orientation="vertical" />
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <p className="font-light text-sm">VSCode Profile Composer</p>
           </NextLink>
@@ -93,5 +94,5 @@ export const Navbar = (): JSX.Element => {
       <DesktopNavbar />
       <MobileNavbar />
     </HeroUINavbar>
-  );
-};
+  )
+}

@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import { useEffect } from 'react'
+import { Button } from '@heroui/button'
+import { Link } from '@heroui/link'
 
 /**
  * Error page that logs the error and redirects to homepage.
@@ -12,8 +12,8 @@ import { Link } from "@heroui/link";
  */
 export default function Error({ error }: { error: Error }) {
   useEffect(() => {
-    console.error(error);
-  }, [error]);
+    console.error(error)
+  }, [error])
 
   return (
     <div className="flex h-full w-full flex-col text-center items-center justify-center p-4">
@@ -21,12 +21,12 @@ export default function Error({ error }: { error: Error }) {
         Something went wrong!
       </h1>
       <p className="mb-8 text-xl max-w-xl text-default-600">
-        Well, this is awkward. We seem to have misplaced this page. It's
+        Well, this is awkward. We seem to have misplaced this page. It&apos;s
         probably off having an existential crisis somewhere.
       </p>
-      <Button as={Link} variant="ghost" color="primary" href="/">
+      <Button as={Link} color="primary" href="/" variant="ghost">
         Go back to the home page
       </Button>
     </div>
-  );
+  )
 }

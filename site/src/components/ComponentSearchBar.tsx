@@ -1,119 +1,119 @@
-"use client";
+'use client'
 
-import React from "react";
-import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
-import { Chip } from "@heroui/chip";
-import { useFilter } from "@react-aria/i18n";
-import { Button } from "@heroui/button";
-import { redirect, RedirectType } from "next/navigation";
-import { addToast } from "@heroui/toast";
-import { motion } from "framer-motion";
-import { RiCloseCircleLine } from "@remixicon/react";
+import React from 'react'
+import { Autocomplete, AutocompleteItem } from '@heroui/autocomplete'
+import { Chip } from '@heroui/chip'
+import { useFilter } from '@react-aria/i18n'
+import { Button } from '@heroui/button'
+import { redirect, RedirectType } from 'next/navigation'
+import { addToast } from '@heroui/toast'
+import { motion } from 'framer-motion'
+import { RiCloseCircleLine } from '@remixicon/react'
 
-type Item = { key: string; label: string };
+type Item = { key: string; label: string }
 
 export type ComponentSearchBarProps = {
   /** Full pool of selectable items */
-  items: Item[];
+  items: Item[]
   /** Number of chips to pre-show when input is empty */
-  initialChipCount?: number; // default 5
+  initialChipCount?: number // default 5
   /** Optional controlled value */
-  value?: string[];
+  value?: string[]
   /** Callback whenever chips change */
-  onChange?: (keys: string[]) => void;
+  onChange?: (keys: string[]) => void
   /** Placeholder for the input */
-  placeholder?: string;
+  placeholder?: string
   /** Label for the field */
-  label?: string;
+  label?: string
   /** Disable already-selected items */
-  disableSelectedOptions?: boolean; // default true
-};
+  disableSelectedOptions?: boolean // default true
+}
 
 export default function ComponentSearchBar({
   items,
   initialChipCount = 5,
   value,
   onChange,
-  placeholder = "Search components…",
-  label = "Components",
+  placeholder = 'Search components…',
+  label = 'Components',
   disableSelectedOptions = true,
 }: ComponentSearchBarProps) {
-  const [chips, setChips] = React.useState<string[]>(value ?? []);
-  const [inputValue, setInputValue] = React.useState("");
-  const { startsWith } = useFilter({ sensitivity: "base" });
-  const [loading2, setLoading2] = React.useState(false);
+  const [chips, setChips] = React.useState<string[]>(value ?? [])
+  const [inputValue, setInputValue] = React.useState('')
+  const { startsWith } = useFilter({ sensitivity: 'base' })
+  const [loading2, setLoading2] = React.useState(false)
 
   // keep internal state in sync if parent controls it
   React.useEffect(() => {
-    if (value) setChips(value);
-  }, [value]);
+    if (value) setChips(value)
+  }, [value])
 
   const chipItems = React.useMemo(
     () => items.filter((i) => chips.includes(i.key)),
     [items, chips]
-  );
+  )
 
   const availableItems = React.useMemo(
     () => items.filter((i) => !chips.includes(i.key)),
     [items, chips]
-  );
+  )
 
   // Filtered items based on input
   const filteredItems = React.useMemo(() => {
-    if (!inputValue.trim()) return availableItems;
+    if (!inputValue.trim()) return availableItems
+
     return availableItems.filter((item) =>
       startsWith(item.label, inputValue.trim())
-    );
-  }, [availableItems, inputValue, startsWith]);
-
-  // First-match logic for Enter: pick first filtered item
-  const firstMatch = React.useMemo(() => {
-    return filteredItems[0];
-  }, [filteredItems]);
+    )
+  }, [availableItems, inputValue, startsWith])
 
   function addChip(key: string | React.Key | null | undefined) {
-    if (!key) return;
-    const k = String(key);
-    if (chips.includes(k)) return;
-    const updated = [...chips, k];
-    if (!value) setChips(updated);
-    onChange?.(updated);
+    if (!key) return
+    const k = String(key)
+
+    if (chips.includes(k)) return
+    const updated = [...chips, k]
+
+    if (!value) setChips(updated)
+    onChange?.(updated)
     // reset field so next Enter adds the next match
-    setInputValue("");
+    setInputValue('')
   }
 
   function removeChip(key: string) {
-    const updated = chips.filter((k) => k !== key);
-    if (!value) setChips(updated);
-    onChange?.(updated);
+    const updated = chips.filter((k) => k !== key)
+
+    if (!value) setChips(updated)
+    onChange?.(updated)
   }
 
   function removeAllChips() {
-    if (!value) setChips([]);
-    onChange?.([]);
+    if (!value) setChips([])
+    onChange?.([])
   }
 
   function onViewRaw() {
-    redirect("/api/compose/" + chips.toSorted().join(","), RedirectType.push);
+    redirect('/api/compose/' + chips.toSorted().join(','), RedirectType.push)
   }
 
   async function onCopyURL() {
-    setLoading2(true);
-    const url = `${window.location.origin}/api/compose/${chips.toSorted().join(",")}`;
-    navigator.clipboard.writeText(url);
+    setLoading2(true)
+    const url = `${window.location.origin}/api/compose/${chips.toSorted().join(',')}`
+
+    navigator.clipboard.writeText(url)
 
     // Wait for random between 0 and 1 seconds:
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
-    setLoading2(false);
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000))
+    setLoading2(false)
 
     addToast({
-      title: "Link copied!",
+      title: 'Link copied!',
       description:
         'Paste this URL in the "Import Profile" dialog from VSCode and you\'re all set!',
-      color: "primary",
-      variant: "flat",
+      color: 'primary',
+      variant: 'flat',
       timeout: 4000,
-    });
+    })
   }
 
   return (
@@ -124,20 +124,20 @@ export default function ComponentSearchBar({
           {chipItems.map((item) => (
             <motion.div
               key={item.key}
-              initial={{ opacity: 0, y: 10 }}
               animate={
                 chips.length > 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }
               }
-              transition={{ duration: 0.5 }}
               aria-hidden={!(chips.length > 0)}
+              initial={{ opacity: 0, y: 10 }}
               style={{
-                pointerEvents: chips.length > 0 ? "auto" : "none",
+                pointerEvents: chips.length > 0 ? 'auto' : 'none',
               }}
+              transition={{ duration: 0.5 }}
             >
               <Chip
-                onClose={() => removeChip(item.key)}
-                variant="flat"
                 className="px-2"
+                variant="flat"
+                onClose={() => removeChip(item.key)}
               >
                 {item.label}
               </Chip>
@@ -150,17 +150,17 @@ export default function ComponentSearchBar({
           {items.slice(0, initialChipCount).map((item) => (
             <motion.div
               key={`suggest-${item.key}`}
-              initial={{ opacity: 0, y: -10 }}
               animate={
                 chips.length === 0
                   ? { opacity: 1, y: 0 }
                   : { opacity: 0, y: -10 }
               }
-              transition={{ duration: 0.5 }}
               aria-hidden={!(chips.length === 0)}
+              initial={{ opacity: 0, y: -10 }}
               style={{
-                pointerEvents: chips.length === 0 ? "auto" : "none",
+                pointerEvents: chips.length === 0 ? 'auto' : 'none',
               }}
+              transition={{ duration: 0.5 }}
             >
               <Chip
                 className="opacity-70 cursor-pointer"
@@ -176,44 +176,42 @@ export default function ComponentSearchBar({
 
       {/* Autocomplete input + listbox */}
       <Autocomplete
-        popoverProps={{
-          placement: "bottom",
-          shouldFlip: false,
-        }}
-        isClearable={false} // Disable clear for typing.
+        fullWidth
+        allowsCustomValue={false}
+        className="w-full max-w-lg"
+        disabledKeys={disableSelectedOptions ? new Set(chips) : undefined}
         endContent={
           chipItems.length > 0 && (
             <Button
               isIconOnly
-              variant="light"
               aria-label="Clear"
               size="lg"
+              variant="light"
               onPress={removeAllChips}
             >
-              <RiCloseCircleLine size={24} className="text-default-400" />
+              <RiCloseCircleLine className="text-default-400" size={24} />
             </Button>
           )
         }
-        label={label}
-        placeholder={placeholder}
         inputValue={inputValue}
-        onInputChange={setInputValue}
-        fullWidth
+        isClearable={false} // Disable clear for typing.
         items={filteredItems}
-        // Prevent selecting already chosen items from the popup
-        disabledKeys={disableSelectedOptions ? new Set(chips) : undefined}
-        allowsCustomValue={false}
-        // When user clicks an item or presses Enter on a highlighted item
+        label={label}
+        listboxProps={{
+          emptyContent: 'No matches found',
+        }}
+        menuTrigger="focus"
+        placeholder={placeholder}
+        popoverProps={{
+          placement: 'bottom',
+          shouldFlip: false,
+        }}
+        onInputChange={setInputValue}
         onSelectionChange={(key) => {
           if (key) {
-            addChip(key);
+            addChip(key)
           }
         }}
-        listboxProps={{
-          emptyContent: "No matches found",
-        }}
-        className="w-full max-w-lg"
-        menuTrigger="focus"
       >
         {(item) => (
           <AutocompleteItem key={item.key} textValue={item.label}>
@@ -223,38 +221,38 @@ export default function ComponentSearchBar({
       </Autocomplete>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
         animate={
           chips.length > 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
         }
-        transition={{ duration: 0.75 }}
-        className="w-full max-w-lg flex items-center justify-center gap-2"
         aria-hidden={!(chips.length > 0)}
+        className="w-full max-w-lg flex items-center justify-center gap-2"
+        initial={{ opacity: 0, y: 20 }}
         style={{
           // keep it in the layout but make it non-interactive when "hidden"
-          pointerEvents: chips.length > 0 ? "auto" : "none",
+          pointerEvents: chips.length > 0 ? 'auto' : 'none',
         }}
+        transition={{ duration: 0.75 }}
       >
         <Button
           fullWidth
-          isLoading={loading2}
-          variant="ghost"
           color="primary"
           isDisabled={chips.length === 0 || loading2}
+          isLoading={loading2}
+          variant="ghost"
           onPress={onCopyURL}
         >
           Copy Profile URL
         </Button>
         <Button
           fullWidth
-          variant="flat"
           color="primary"
           isDisabled={chips.length === 0 || loading2}
+          variant="flat"
           onPress={onViewRaw}
         >
           View Raw Profile
         </Button>
       </motion.div>
     </div>
-  );
+  )
 }

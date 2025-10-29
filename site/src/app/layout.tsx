@@ -1,12 +1,14 @@
-import "@/styles/globals.css";
-import { Link } from "@heroui/link";
-import clsx from "clsx";
-import { Providers } from "./providers";
-import { Navbar } from "@/components/navbar";
-import { fontSans } from "@/site.config";
-export { metadata, viewport } from "@/site.config";
+import '@/styles/globals.css'
+import { Link } from '@heroui/link'
+import clsx from 'clsx'
 
-export const dynamic = "force-static";
+import { Providers } from './providers'
+
+import { Navbar } from '@/components/navbar'
+import { fontSans } from '@/site.config'
+export { metadata, viewport } from '@/site.config'
+
+export const dynamic = 'force-static'
 
 /**
  * Root layout component.
@@ -17,18 +19,18 @@ export const dynamic = "force-static";
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }): JSX.Element {
   return (
     <html suppressHydrationWarning lang="en">
       <head />
       <body
         className={clsx(
-          "min-h-screen text-foreground bg-background font-sans antialiased",
+          'min-h-screen text-foreground bg-background font-sans antialiased',
           fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
+        <Providers themeProps={{ attribute: 'class', defaultTheme: 'system' }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="container mx-auto max-w-7xl px-6 flex-grow">
@@ -39,8 +41,8 @@ export default function RootLayout({
                 <p>&copy;&nbsp;</p>
                 <Link
                   isExternal
-                  href="https://github.com/erlete"
                   className="text-primary-500/80"
+                  href="https://github.com/erlete"
                   size="sm"
                 >
                   erlete
@@ -48,27 +50,27 @@ export default function RootLayout({
                 <p>&nbsp;2025</p>
               </span>
               <p className="font-light text-xs">
-                Made with{" "}
+                Made with{' '}
                 <Link
                   isExternal
-                  href="https://nextjs.org/"
                   className="text-xs text-primary-500/80"
+                  href="https://nextjs.org/"
                 >
                   Next.js
-                </Link>{" "}
-                and{" "}
+                </Link>{' '}
+                and{' '}
                 <Link
                   isExternal
-                  href="https://www.heroui.com/"
                   className="text-xs text-primary-500/80"
+                  href="https://www.heroui.com/"
                 >
                   HeroUI
                 </Link>
-                , icons from{" "}
+                , icons from{' '}
                 <Link
                   isExternal
-                  href="https://remixicon.com/"
                   className="text-xs text-primary-500/80"
+                  href="https://remixicon.com/"
                 >
                   Remix Icon
                 </Link>
@@ -78,5 +80,5 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
-  );
+  )
 }
