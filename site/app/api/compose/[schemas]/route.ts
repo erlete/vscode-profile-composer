@@ -1,64 +1,99 @@
-import { NextResponse } from "next/server";
-import {
-  paramCombinations,
-  readManifest,
-  readSchema,
-  readSchema2,
-} from "@/app/lib";
+import { NextRequest, NextResponse } from "next/server";
+import { readManifestSchemaNames, composeProfile } from "@/lib/profiles";
 
-export const dynamic = "force-static";
-export const revalidate = 0;
+// region Configuration
 
-export async function generateStaticParams() {
-  try {
-    const manifest = readManifest();
-    const combinations = paramCombinations(manifest);
-    const paths = combinations.map((schemaCombo) => ({
-      schemas: schemaCombo,
-    }));
-    console.log(
-      `generateStaticParams: ${JSON.stringify(paths).length} segments`
-    );
-    return paths;
-  } catch (error) {
-    console.error("Error in generateStaticParams:", error);
-    return [];
-  }
-}
+const REVALIDATION_SECS = 3600;
+export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
+// region Helpers
+
+/**
+ * Helper function for lowering case of array of strings.
+ *
+ * @param {string[]} s - Array of strings to convert to lowercase.
+ * @returns {string[]} - Array of lowercase strings.
+ */
+const toLower = (s: string[]) => s.map((v) => v.toLowerCase());
+
+/**
+ * Helper function to deduplicate an array of strings.
+ *
+ * @param {string[]} s - Array of strings to deduplicate.
+ * @returns {string[]} - Deduplicated array of strings.
+ */
+const dedupe = (s: string[]) => Array.from(new Set(s));
+
+// region Handler
+
+/**
+ * GET handler for /api/compose/[schemas].
+ *
+ * This route handler is responsible for serving the requested combination of
+ * schemas. If any of the requested schemas is not found, it is supressed from
+ * the list of provided schemas. If the supressed schema is the last one, a
+ * 404 redirection is issued.
+ *
+ * @param {NextRequest} request - The incoming request object.
+ * @param {Object} params - The parameters object containing the schemas.
+ * @returns {Promise<NextResponse>} - The response containing the profile data or an error message.
+ */
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ schemas: string }> }
-) {
-  try {
-    const resolvedParams = await params;
-    const schemaList = resolvedParams.schemas;
-    const manifest = readManifest();
-    const combinations = paramCombinations(manifest);
+): Promise<NextResponse> {
+  const schemas = dedupe(toLower((await params).schemas.split(",")));
 
-    console.log(
-      `current path: ${schemaList}, in manifest?: ${combinations.includes(schemaList)}`
+  try {
+    const manifestSchemas = toLower(readManifestSchemaNames());
+    const sanitizedSchemas = dedupe(toLower(schemas.toSorted())).filter(
+      (schema) => manifestSchemas.some((name) => name === schema)
     );
 
-    // Error case: requested profile not present in manifest:
-    if (!combinations.includes(schemaList)) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    // If no schemas remain after sanitizing, return 404 with detail:
+    if (sanitizedSchemas.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Could not generate a profile from the requested schemas",
+          details: {
+            requestedSchemas: schemas,
+            availableSchemas: manifestSchemas,
+          },
+        },
+        { status: 404 }
+      );
     }
 
-    const profileData = readSchema2(schemaList);
-    console.log(`profile data: ${JSON.stringify(profileData).length} bytes`);
+    // If schemas provided are unsorted, permanently redirect to sorted URL:
+    if (JSON.stringify(schemas) !== JSON.stringify(sanitizedSchemas)) {
+      const url = new URL(request.url);
+      url.pathname = `/api/compose/${sanitizedSchemas}`;
+      return NextResponse.redirect(url.toString(), {
+        status: 308,
+        headers: {
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
 
-    return NextResponse.json(profileData, {
+    // Return data with headers:
+    return NextResponse.json(composeProfile(sanitizedSchemas), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        "Cache-Control": `public, max-age=${REVALIDATION_SECS}, s-maxage=${REVALIDATION_SECS}, stale-while-revalidate=86400`,
+        "CDN-Cache-Control": `public, max-age=${REVALIDATION_SECS}`,
+        Vary: "Accept-Encoding",
+        ETag: `W/"${Buffer.from(sanitizedSchemas.join(",")).toString("base64")}"`,
+        "X-Content-Type-Options": "nosniff",
       },
     });
   } catch (error) {
-    console.error("Error in GET /api/compose/[schemas]:", error);
+    // Log and handle internal errors:
+    console.error(`[Error] GET /api/compose/${schemas}:`, error);
     return NextResponse.json(
-      { error: "Failed to load profile data" },
+      { error: "Failed to compose profile data" },
       { status: 500 }
     );
   }
