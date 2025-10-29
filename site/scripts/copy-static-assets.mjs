@@ -5,7 +5,7 @@ import { dirname } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const siteRoot = join(__dirname, '..', 'site')
+const siteRoot = join(__dirname, '..')
 
 async function copyStaticAssets() {
   try {
