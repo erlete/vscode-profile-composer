@@ -387,7 +387,10 @@ export function composeProfile(fragmentNames: string[]): object {
     name: merged.name,
     extensions: JSON.stringify(merged.extensions),
     settings: JSON.stringify({ settings: JSON.stringify(merged.settings) }),
-    keybindings: JSON.stringify(merged.keybindings),
+    keybindings: JSON.stringify({
+      keybindings: JSON.stringify(merged.keybindings),
+      platform: 3,
+    }),
     tasks: JSON.stringify(merged.tasks),
     snippets: JSON.stringify(merged.snippets),
     globalState: JSON.stringify(merged.globalState),

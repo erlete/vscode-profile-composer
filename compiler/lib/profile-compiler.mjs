@@ -177,7 +177,14 @@ export class ProfileCompiler {
    * @returns {string} keybindings JSON string for VS Code profile
    */
   compileKeybindings(keybindings) {
-    return JSON.stringify([...keybindings]);
+    // Wrap keybindings in an object similar to settings format
+    // VS Code expects: {"keybindings": "<json-string-array>", "platform": 3}
+    const keybindingsJson = JSON.stringify([...keybindings], null, 2);
+    const wrapper = {
+      keybindings: keybindingsJson,
+      platform: 3, // 3 = cross-platform
+    };
+    return JSON.stringify(wrapper);
   }
 
   /**
