@@ -383,16 +383,45 @@ export function composeProfile(fragmentNames: string[]): object {
   }
 
   // Convert back to VS Code profile format (JSON strings):
-  return {
+  // Only include fields that have meaningful content
+  const result: any = {
     name: merged.name,
-    extensions: JSON.stringify(merged.extensions),
-    settings: JSON.stringify({ settings: JSON.stringify(merged.settings) }),
-    keybindings: JSON.stringify({
+  }
+
+  // Add extensions if present
+  if (merged.extensions.length > 0) {
+    result.extensions = JSON.stringify(merged.extensions)
+  }
+
+  // Add settings if present
+  if (Object.keys(merged.settings).length > 0) {
+    result.settings = JSON.stringify({
+      settings: JSON.stringify(merged.settings),
+    })
+  }
+
+  // Add keybindings if present
+  if (merged.keybindings.length > 0) {
+    result.keybindings = JSON.stringify({
       keybindings: JSON.stringify(merged.keybindings),
       platform: 3,
-    }),
-    tasks: JSON.stringify(merged.tasks),
-    snippets: JSON.stringify(merged.snippets),
-    globalState: JSON.stringify(merged.globalState),
+    })
   }
+
+  // Add tasks if present
+  if (Object.keys(merged.tasks).length > 0) {
+    result.tasks = JSON.stringify(merged.tasks)
+  }
+
+  // Add snippets if present
+  if (Object.keys(merged.snippets).length > 0) {
+    result.snippets = JSON.stringify(merged.snippets)
+  }
+
+  // Add globalState if present
+  if (Object.keys(merged.globalState).length > 0) {
+    result.globalState = JSON.stringify(merged.globalState)
+  }
+
+  return result
 }

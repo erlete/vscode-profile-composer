@@ -27,47 +27,65 @@ export class ProfileCompiler {
       profile.icon = options.icon;
     }
 
-    // Compile extensions as JSON string
-    if (resolvedTemplates.extensions && resolvedTemplates.extensions.content) {
+    // Compile extensions as JSON string (only if has content)
+    if (
+      resolvedTemplates.extensions &&
+      resolvedTemplates.extensions.content &&
+      this.hasContent(resolvedTemplates.extensions.content)
+    ) {
       profile.extensions = await this.compileExtensions(
         resolvedTemplates.extensions.content,
         options
       );
     }
 
-    // Compile settings as JSON string
-    if (resolvedTemplates.settings && resolvedTemplates.settings.content) {
+    // Compile settings as JSON string (only if has content)
+    if (
+      resolvedTemplates.settings &&
+      resolvedTemplates.settings.content &&
+      this.hasContent(resolvedTemplates.settings.content)
+    ) {
       profile.settings = this.compileSettings(
         resolvedTemplates.settings.content
       );
     }
 
-    // Compile keybindings as JSON string if present
+    // Compile keybindings as JSON string if present (only if has content)
     if (
       resolvedTemplates.keybindings &&
-      resolvedTemplates.keybindings.content
+      resolvedTemplates.keybindings.content &&
+      this.hasContent(resolvedTemplates.keybindings.content)
     ) {
       profile.keybindings = this.compileKeybindings(
         resolvedTemplates.keybindings.content
       );
     }
 
-    // Compile tasks as JSON string if present
-    if (resolvedTemplates.tasks && resolvedTemplates.tasks.content) {
+    // Compile tasks as JSON string if present (only if has content)
+    if (
+      resolvedTemplates.tasks &&
+      resolvedTemplates.tasks.content &&
+      this.hasContent(resolvedTemplates.tasks.content)
+    ) {
       profile.tasks = this.compileTasks(resolvedTemplates.tasks.content);
     }
 
-    // Compile snippets as JSON string if present
-    if (resolvedTemplates.snippets && resolvedTemplates.snippets.content) {
+    // Compile snippets as JSON string if present (only if has content)
+    if (
+      resolvedTemplates.snippets &&
+      resolvedTemplates.snippets.content &&
+      this.hasContent(resolvedTemplates.snippets.content)
+    ) {
       profile.snippets = this.compileSnippets(
         resolvedTemplates.snippets.content
       );
     }
 
-    // Compile globalState as JSON string if present
+    // Compile globalState as JSON string if present (only if has content)
     if (
       resolvedTemplates.globalState &&
-      resolvedTemplates.globalState.content
+      resolvedTemplates.globalState.content &&
+      this.hasContent(resolvedTemplates.globalState.content)
     ) {
       profile.globalState = this.compileGlobalState(
         resolvedTemplates.globalState.content
@@ -75,6 +93,24 @@ export class ProfileCompiler {
     }
 
     return profile;
+  }
+
+  /**
+   * Check if content is meaningful (not empty array/object)
+   * @param {*} content - content to check
+   * @returns {boolean} true if content has meaningful data
+   */
+  hasContent(content) {
+    if (content === null || content === undefined) {
+      return false;
+    }
+    if (Array.isArray(content)) {
+      return content.length > 0;
+    }
+    if (typeof content === "object") {
+      return Object.keys(content).length > 0;
+    }
+    return true;
   }
 
   /**
