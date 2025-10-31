@@ -85,12 +85,17 @@ export async function GET(
     return NextResponse.json(composeProfile(sanitizedFragments), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': `public, max-age=${REVALIDATION_SECS}, s-maxage=${REVALIDATION_SECS}, stale-while-revalidate=86400`,
         'CDN-Cache-Control': `public, max-age=${REVALIDATION_SECS}`,
         Vary: 'Accept-Encoding',
         ETag: `W/"${Buffer.from(sanitizedFragments.join(',')).toString('base64')}"`,
         'X-Content-Type-Options': 'nosniff',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
       },
     })
   } catch (error) {
@@ -102,4 +107,17 @@ export async function GET(
       { status: 500 }
     )
   }
+}
+
+export function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+    },
+  })
 }
