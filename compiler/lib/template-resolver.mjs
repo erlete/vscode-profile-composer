@@ -1,6 +1,6 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { validateTemplates } from "./validators.mjs";
+import { promises as fs } from 'fs'
+import path from 'path'
+import { validateTemplates } from './validators.mjs'
 
 /**
  * Template resolver - handles dependency resolution and template merging
@@ -9,10 +9,10 @@ import { validateTemplates } from "./validators.mjs";
 
 export class TemplateResolver {
   constructor(templatesDir) {
-    this.templatesDir = templatesDir;
-    validateTemplates(templatesDir);
-    this.cache = new Map();
-    this.resolveStack = new Set(); // For circular dependency detection
+    this.templatesDir = templatesDir
+    validateTemplates(templatesDir)
+    this.cache = new Map()
+    this.resolveStack = new Set() // For circular dependency detection
   }
 
   /**
@@ -23,21 +23,21 @@ export class TemplateResolver {
    * @returns {Promise<Object>} resolved template content
    */
   async resolveTemplate(category, templateName, componentType) {
-    const cacheKey = `${category}/${templateName}/${componentType}`;
+    const cacheKey = `${category}/${templateName}/${componentType}`
 
     if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey);
+      return this.cache.get(cacheKey)
     }
 
     if (this.resolveStack.has(cacheKey)) {
       throw new Error(
         `Circular dependency detected: ${Array.from(this.resolveStack).join(
-          " -> "
+          ' -> '
         )} -> ${cacheKey}`
-      );
+      )
     }
 
-    this.resolveStack.add(cacheKey);
+    this.resolveStack.add(cacheKey)
 
     try {
       const templatePath = path.join(
@@ -45,14 +45,14 @@ export class TemplateResolver {
         category,
         templateName,
         `${componentType}.json`
-      );
-      const template = await this.loadTemplate(templatePath);
-      const resolved = await this.resolveExtends(template, componentType);
+      )
+      const template = await this.loadTemplate(templatePath)
+      const resolved = await this.resolveExtends(template, componentType)
 
-      this.cache.set(cacheKey, resolved);
-      return resolved;
+      this.cache.set(cacheKey, resolved)
+      return resolved
     } finally {
-      this.resolveStack.delete(cacheKey);
+      this.resolveStack.delete(cacheKey)
     }
   }
 
@@ -63,18 +63,18 @@ export class TemplateResolver {
    */
   async loadTemplate(templatePath) {
     try {
-      const content = await fs.readFile(templatePath, "utf-8");
+      const content = await fs.readFile(templatePath, 'utf-8')
       // Remove comments for JSON parsing
-      const cleanContent = content.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
-      return JSON.parse(cleanContent);
+      const cleanContent = content.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+      return JSON.parse(cleanContent)
     } catch (error) {
-      if (error.code === "ENOENT") {
+      if (error.code === 'ENOENT') {
         // Return empty template if file doesn't exist
-        return { content: [] };
+        return { content: [] }
       }
       throw new Error(
         `Failed to load template ${templatePath}: ${error.message}`
-      );
+      )
     }
   }
 
@@ -86,14 +86,14 @@ export class TemplateResolver {
    */
   async resolveExtends(template, componentType) {
     if (!template.extends) {
-      return template;
+      return template
     }
 
-    const mergedContent = [];
-    const mergedSettings = {};
+    const mergedContent = []
+    const mergedSettings = {}
 
     // Process extends in order: bundles, frameworks, languages
-    const categories = ["bundles", "frameworks", "languages"];
+    const categories = ['bundles', 'frameworks', 'languages']
 
     for (const category of categories) {
       if (template.extends[category]) {
@@ -102,17 +102,17 @@ export class TemplateResolver {
             category,
             templateName,
             componentType
-          );
+          )
 
-          if (componentType === "extensions") {
+          if (componentType === 'extensions') {
             // For extensions, merge arrays
             if (extendedTemplate.content) {
-              mergedContent.push(...extendedTemplate.content);
+              mergedContent.push(...extendedTemplate.content)
             }
-          } else if (componentType === "settings") {
+          } else if (componentType === 'settings') {
             // For settings, merge objects
             if (extendedTemplate.content) {
-              Object.assign(mergedSettings, extendedTemplate.content);
+              Object.assign(mergedSettings, extendedTemplate.content)
             }
           }
         }
@@ -120,21 +120,21 @@ export class TemplateResolver {
     }
 
     // Add current template's content
-    if (componentType === "extensions") {
+    if (componentType === 'extensions') {
       if (template.content) {
-        mergedContent.push(...template.content);
+        mergedContent.push(...template.content)
       }
       // Remove duplicates while preserving order
-      const uniqueContent = [...new Set(mergedContent)];
-      return { ...template, content: uniqueContent };
-    } else if (componentType === "settings") {
+      const uniqueContent = [...new Set(mergedContent)]
+      return { ...template, content: uniqueContent }
+    } else if (componentType === 'settings') {
       if (template.content) {
-        Object.assign(mergedSettings, template.content);
+        Object.assign(mergedSettings, template.content)
       }
-      return { ...template, content: mergedSettings };
+      return { ...template, content: mergedSettings }
     }
 
-    return template;
+    return template
   }
 
   /**
@@ -144,16 +144,14 @@ export class TemplateResolver {
    */
   async getAvailableTemplates(category) {
     try {
-      const categoryPath = path.join(this.templatesDir, category);
-      const items = await fs.readdir(categoryPath, { withFileTypes: true });
-      return items
-        .filter((item) => item.isDirectory())
-        .map((item) => item.name);
+      const categoryPath = path.join(this.templatesDir, category)
+      const items = await fs.readdir(categoryPath, { withFileTypes: true })
+      return items.filter((item) => item.isDirectory()).map((item) => item.name)
     } catch (error) {
-      if (error.code === "ENOENT") {
-        return [];
+      if (error.code === 'ENOENT') {
+        return []
       }
-      throw error;
+      throw error
     }
   }
 
@@ -161,8 +159,8 @@ export class TemplateResolver {
    * Clear the resolution cache
    */
   clearCache() {
-    this.cache.clear();
+    this.cache.clear()
   }
 }
 
-export default TemplateResolver;
+export default TemplateResolver

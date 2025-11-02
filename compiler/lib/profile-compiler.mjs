@@ -1,4 +1,4 @@
-import https from "https";
+import https from 'https'
 
 /**
  * Profile compiler - converts resolved templates to VS Code profile format
@@ -7,7 +7,7 @@ import https from "https";
 
 export class ProfileCompiler {
   constructor() {
-    this.extensionInfoCache = new Map();
+    this.extensionInfoCache = new Map()
   }
 
   /**
@@ -19,12 +19,12 @@ export class ProfileCompiler {
   async compileProfile(resolvedTemplates, options = {}) {
     // Follow VS Code's IUserDataProfileTemplate interface
     const profile = {
-      name: options.name || "Generated Profile",
-    };
+      name: options.name || 'Generated Profile',
+    }
 
     // Add optional icon if provided
     if (options.icon) {
-      profile.icon = options.icon;
+      profile.icon = options.icon
     }
 
     // Compile extensions as JSON string (only if has content)
@@ -36,7 +36,7 @@ export class ProfileCompiler {
       profile.extensions = await this.compileExtensions(
         resolvedTemplates.extensions.content,
         options
-      );
+      )
     }
 
     // Compile settings as JSON string (only if has content)
@@ -47,7 +47,7 @@ export class ProfileCompiler {
     ) {
       profile.settings = this.compileSettings(
         resolvedTemplates.settings.content
-      );
+      )
     }
 
     // Compile keybindings as JSON string if present (only if has content)
@@ -58,7 +58,7 @@ export class ProfileCompiler {
     ) {
       profile.keybindings = this.compileKeybindings(
         resolvedTemplates.keybindings.content
-      );
+      )
     }
 
     // Compile tasks as JSON string if present (only if has content)
@@ -67,7 +67,7 @@ export class ProfileCompiler {
       resolvedTemplates.tasks.content &&
       this.hasContent(resolvedTemplates.tasks.content)
     ) {
-      profile.tasks = this.compileTasks(resolvedTemplates.tasks.content);
+      profile.tasks = this.compileTasks(resolvedTemplates.tasks.content)
     }
 
     // Compile snippets as JSON string if present (only if has content)
@@ -78,7 +78,7 @@ export class ProfileCompiler {
     ) {
       profile.snippets = this.compileSnippets(
         resolvedTemplates.snippets.content
-      );
+      )
     }
 
     // Compile globalState as JSON string if present (only if has content)
@@ -89,10 +89,10 @@ export class ProfileCompiler {
     ) {
       profile.globalState = this.compileGlobalState(
         resolvedTemplates.globalState.content
-      );
+      )
     }
 
-    return profile;
+    return profile
   }
 
   /**
@@ -102,15 +102,15 @@ export class ProfileCompiler {
    */
   hasContent(content) {
     if (content === null || content === undefined) {
-      return false;
+      return false
     }
     if (Array.isArray(content)) {
-      return content.length > 0;
+      return content.length > 0
     }
-    if (typeof content === "object") {
-      return Object.keys(content).length > 0;
+    if (typeof content === 'object') {
+      return Object.keys(content).length > 0
     }
-    return true;
+    return true
   }
 
   /**
@@ -120,17 +120,17 @@ export class ProfileCompiler {
    * @returns {Promise<string>} extensions JSON string for VS Code profile
    */
   async compileExtensions(extensionIds, options = {}) {
-    const extensions = [];
+    const extensions = []
 
     if (options.fetchExtensionInfo !== false) {
       // Fetch extension information for each extension
       for (const extensionId of extensionIds) {
         try {
-          let extensionInfo = this.extensionInfoCache.get(extensionId);
+          let extensionInfo = this.extensionInfoCache.get(extensionId)
 
           if (!extensionInfo) {
-            extensionInfo = await this.getExtensionInfo(extensionId);
-            this.extensionInfoCache.set(extensionId, extensionInfo);
+            extensionInfo = await this.getExtensionInfo(extensionId)
+            this.extensionInfoCache.set(extensionId, extensionInfo)
           }
 
           if (extensionInfo) {
@@ -145,7 +145,7 @@ export class ProfileCompiler {
               preRelease: extensionInfo.preRelease || false,
               applicationScoped: extensionInfo.applicationScoped || false,
               disabled: false,
-            });
+            })
           } else {
             // Fallback for extensions that couldn't be fetched
             extensions.push({
@@ -156,12 +156,12 @@ export class ProfileCompiler {
               displayName: extensionId,
               applicationScoped: false,
               disabled: false,
-            });
+            })
           }
         } catch (error) {
           console.warn(
             `Failed to fetch info for extension ${extensionId}: ${error.message}`
-          );
+          )
 
           // Add extension without detailed info
           extensions.push({
@@ -172,7 +172,7 @@ export class ProfileCompiler {
             displayName: extensionId,
             applicationScoped: false,
             disabled: false,
-          });
+          })
         }
       }
     } else {
@@ -180,18 +180,18 @@ export class ProfileCompiler {
       for (const id of extensionIds) {
         extensions.push({
           identifier: {
-            id: id,
+            id,
             uuid: this.generateUUID(),
           },
           displayName: id,
           applicationScoped: false,
           disabled: false,
-        });
+        })
       }
     }
 
     // Return as JSON string as required by VS Code profile format
-    return JSON.stringify(extensions);
+    return JSON.stringify(extensions)
   }
 
   /**
@@ -203,8 +203,8 @@ export class ProfileCompiler {
     // Follow VS Code's ISettingsContent format
     const settingsContent = {
       settings: JSON.stringify(settings, null, 2),
-    };
-    return JSON.stringify(settingsContent);
+    }
+    return JSON.stringify(settingsContent)
   }
 
   /**
@@ -215,12 +215,12 @@ export class ProfileCompiler {
   compileKeybindings(keybindings) {
     // Wrap keybindings in an object similar to settings format
     // VS Code expects: {"keybindings": "<json-string-array>", "platform": 3}
-    const keybindingsJson = JSON.stringify([...keybindings], null, 2);
+    const keybindingsJson = JSON.stringify([...keybindings], null, 2)
     const wrapper = {
       keybindings: keybindingsJson,
       platform: 3, // 3 = cross-platform
-    };
-    return JSON.stringify(wrapper);
+    }
+    return JSON.stringify(wrapper)
   }
 
   /**
@@ -230,10 +230,10 @@ export class ProfileCompiler {
    */
   compileTasks(tasks) {
     const tasksConfig = {
-      version: "2.0.0",
+      version: '2.0.0',
       ...tasks,
-    };
-    return JSON.stringify(tasksConfig);
+    }
+    return JSON.stringify(tasksConfig)
   }
 
   /**
@@ -242,7 +242,7 @@ export class ProfileCompiler {
    * @returns {string} snippets JSON string for VS Code profile
    */
   compileSnippets(snippets) {
-    return JSON.stringify({ ...snippets });
+    return JSON.stringify({ ...snippets })
   }
 
   /**
@@ -251,7 +251,7 @@ export class ProfileCompiler {
    * @returns {string} global state JSON string for VS Code profile
    */
   compileGlobalState(globalState) {
-    return JSON.stringify({ ...globalState });
+    return JSON.stringify({ ...globalState })
   }
 
   /**
@@ -259,21 +259,18 @@ export class ProfileCompiler {
    * @returns {string} generated UUID
    */
   generateUUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c == "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   }
 
   /**
    * Clear the extension info cache
    */
   clearCache() {
-    this.extensionInfoCache.clear();
+    this.extensionInfoCache.clear()
   }
 
   getExtensionInfo(extensionId) {
@@ -289,27 +286,27 @@ export class ProfileCompiler {
         },
       ],
       flags: 914,
-    });
+    })
 
     const options = {
-      hostname: "marketplace.visualstudio.com",
-      path: "/_apis/public/gallery/extensionquery",
-      method: "POST",
+      hostname: 'marketplace.visualstudio.com',
+      path: '/_apis/public/gallery/extensionquery',
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json;api-version=3.0-preview.1",
-        "Content-Length": postData.length,
+        'Content-Type': 'application/json',
+        Accept: 'application/json;api-version=3.0-preview.1',
+        'Content-Length': postData.length,
       },
-    };
+    }
 
     return new Promise((resolve, reject) => {
       const req = https.request(options, (res) => {
-        let data = "";
-        res.on("data", (chunk) => (data += chunk));
-        res.on("end", () => {
+        let data = ''
+        res.on('data', (chunk) => (data += chunk))
+        res.on('end', () => {
           try {
-            const response = JSON.parse(data);
-            const ext = response.results[0]?.extensions[0];
+            const response = JSON.parse(data)
+            const ext = response.results[0]?.extensions[0]
             if (ext) {
               resolve({
                 identifier: {
@@ -320,21 +317,21 @@ export class ProfileCompiler {
                 version: ext.versions[0].version,
                 description: ext.shortDescription,
                 publisher: ext.publisher.publisherName,
-              });
+              })
             } else {
-              reject(new Error("Extension not found"));
+              reject(new Error('Extension not found'))
             }
           } catch (error) {
-            reject(error);
+            reject(error)
           }
-        });
-      });
+        })
+      })
 
-      req.on("error", reject);
-      req.write(postData);
-      req.end();
-    });
+      req.on('error', reject)
+      req.write(postData)
+      req.end()
+    })
   }
 }
 
-export default ProfileCompiler;
+export default ProfileCompiler
