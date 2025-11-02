@@ -1,1 +1,13 @@
-{}
+{
+  "github.copilot.chat.welcomeMessage": "never",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.enable": {
+    "*": true
+  },
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "chat.editing.alwaysSaveWithGeneratedChanges": true,
+  "chat.mcp.autostart": "newAndOutdated",
+  "chat.tools.terminal.autoApprove": {
+    "pnpm": true
+  }
+}

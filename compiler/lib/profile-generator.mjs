@@ -1,8 +1,8 @@
-import { TemplateResolver } from "./template-resolver.mjs";
-import { ProfileCompiler } from "./profile-compiler.mjs";
-import { validateGitRepository } from "./validators.mjs";
-import { promises as fs } from "fs";
-import path from "path";
+import { TemplateResolver } from './template-resolver.mjs'
+import { ProfileCompiler } from './profile-compiler.mjs'
+import { validateGitRepository } from './validators.mjs'
+import { existsSync, promises as fs } from 'fs'
+import path from 'path'
 
 /**
  * Main profile compilation orchestrator
@@ -11,10 +11,10 @@ import path from "path";
 
 export class ProfileGenerator {
   constructor(templatesDir = null, outputDir = null) {
-    this.templatesDir = templatesDir || path.join(process.cwd(), "templates");
-    this.outputDir = outputDir || path.join(process.cwd(), "compiled");
-    this.resolver = new TemplateResolver(this.templatesDir);
-    this.compiler = new ProfileCompiler();
+    this.templatesDir = templatesDir || path.join(process.cwd(), 'templates')
+    this.outputDir = outputDir || path.join(process.cwd(), 'compiled')
+    this.resolver = new TemplateResolver(this.templatesDir)
+    this.compiler = new ProfileCompiler()
   }
 
   /**
@@ -32,42 +32,42 @@ export class ProfileGenerator {
       frameworks = [],
       languages = [],
       options = {},
-    } = config;
+    } = config
 
     // Component types to process
     const componentTypes = [
-      "extensions",
-      "settings",
-      "keybindings",
-      "tasks",
-      "snippets",
-      "globalState",
-    ];
-    const resolvedTemplates = {};
+      'extensions',
+      'settings',
+      'keybindings',
+      'tasks',
+      'snippets',
+      'globalState',
+    ]
+    const resolvedTemplates = {}
 
     // Process each component type
     for (const componentType of componentTypes) {
       const mergedContent =
-        componentType === "settings" || componentType === "globalState"
+        componentType === 'settings' || componentType === 'globalState'
           ? {}
-          : [];
+          : []
 
       // Process bundles
       for (const bundleName of bundles) {
         const template = await this.resolver.resolveTemplate(
-          "bundles",
+          'bundles',
           bundleName,
           componentType
-        );
+        )
         if (template.content) {
-          if (componentType === "settings" || componentType === "globalState") {
-            Object.assign(mergedContent, template.content);
+          if (componentType === 'settings' || componentType === 'globalState') {
+            Object.assign(mergedContent, template.content)
           } else {
             mergedContent.push(
               ...(Array.isArray(template.content)
                 ? template.content
                 : [template.content])
-            );
+            )
           }
         }
       }
@@ -75,19 +75,19 @@ export class ProfileGenerator {
       // Process frameworks
       for (const frameworkName of frameworks) {
         const template = await this.resolver.resolveTemplate(
-          "frameworks",
+          'frameworks',
           frameworkName,
           componentType
-        );
+        )
         if (template.content) {
-          if (componentType === "settings" || componentType === "globalState") {
-            Object.assign(mergedContent, template.content);
+          if (componentType === 'settings' || componentType === 'globalState') {
+            Object.assign(mergedContent, template.content)
           } else {
             mergedContent.push(
               ...(Array.isArray(template.content)
                 ? template.content
                 : [template.content])
-            );
+            )
           }
         }
       }
@@ -95,19 +95,19 @@ export class ProfileGenerator {
       // Process languages
       for (const languageName of languages) {
         const template = await this.resolver.resolveTemplate(
-          "languages",
+          'languages',
           languageName,
           componentType
-        );
+        )
         if (template.content) {
-          if (componentType === "settings" || componentType === "globalState") {
-            Object.assign(mergedContent, template.content);
+          if (componentType === 'settings' || componentType === 'globalState') {
+            Object.assign(mergedContent, template.content)
           } else {
             mergedContent.push(
               ...(Array.isArray(template.content)
                 ? template.content
                 : [template.content])
-            );
+            )
           }
         }
       }
@@ -116,26 +116,22 @@ export class ProfileGenerator {
       if (Array.isArray(mergedContent)) {
         resolvedTemplates[componentType] = {
           content: [...new Set(mergedContent.flat())],
-        };
+        }
       } else {
         resolvedTemplates[componentType] = {
           content: mergedContent,
-        };
+        }
       }
     }
 
     // Generate profile name
-    const profileName = this.generateProfileName(
-      bundles,
-      frameworks,
-      languages
-    );
+    const profileName = this.generateProfileName(bundles, frameworks, languages)
 
     // Compile the profile
-    return await this.compiler.compileProfile(resolvedTemplates, {
+    return this.compiler.compileProfile(resolvedTemplates, {
       name: `VSCode Profile Composer (${profileName})`,
       ...options,
-    });
+    })
   }
 
   /**
@@ -144,22 +140,19 @@ export class ProfileGenerator {
    * @returns {Promise<Object>} map of profile names to profiles
    */
   async generateBaseProfiles(options = {}) {
-    const availableBundles = await this.resolver.getAvailableTemplates(
-      "bundles"
-    );
-    const availableFrameworks = await this.resolver.getAvailableTemplates(
-      "frameworks"
-    );
-    const availableLanguages = await this.resolver.getAvailableTemplates(
-      "languages"
-    );
+    const availableBundles =
+      await this.resolver.getAvailableTemplates('bundles')
+    const availableFrameworks =
+      await this.resolver.getAvailableTemplates('frameworks')
+    const availableLanguages =
+      await this.resolver.getAvailableTemplates('languages')
 
-    console.log(`Found base templates:`);
-    console.log(`  Bundles: ${availableBundles.join(", ") || "none"}`);
-    console.log(`  Frameworks: ${availableFrameworks.join(", ") || "none"}`);
-    console.log(`  Languages: ${availableLanguages.join(", ") || "none"}`);
+    console.log(`Found base templates:`)
+    console.log(`  Bundles: ${availableBundles.join(', ') || 'none'}`)
+    console.log(`  Frameworks: ${availableFrameworks.join(', ') || 'none'}`)
+    console.log(`  Languages: ${availableLanguages.join(', ') || 'none'}`)
 
-    const profiles = {};
+    const profiles = {}
     const baseTemplates = [
       ...availableBundles.map((name) => ({
         bundles: [name],
@@ -176,9 +169,9 @@ export class ProfileGenerator {
         frameworks: [],
         languages: [name],
       })),
-    ];
+    ]
 
-    console.log(`Generating ${baseTemplates.length} base profiles...`);
+    console.log(`Generating ${baseTemplates.length} base profiles...`)
 
     for (const template of baseTemplates) {
       try {
@@ -187,29 +180,29 @@ export class ProfileGenerator {
           frameworks: template.frameworks,
           languages: template.languages,
           options,
-        });
+        })
 
         const profileKey = this.generateProfileName(
           template.bundles,
           template.frameworks,
           template.languages
-        );
-        profiles[profileKey] = profile;
+        )
+        profiles[profileKey] = profile
 
-        console.log(`✓ Generated base profile: ${profileKey}`);
+        console.log(`✓ Generated base profile: ${profileKey}`)
       } catch (error) {
         const profileKey = this.generateProfileName(
           template.bundles,
           template.frameworks,
           template.languages
-        );
+        )
         console.error(
           `✗ Failed to generate base profile ${profileKey}: ${error.message}`
-        );
+        )
       }
     }
 
-    return profiles;
+    return profiles
   }
 
   /**
@@ -219,32 +212,29 @@ export class ProfileGenerator {
    */
   async generateAllProfiles(options = {}) {
     console.warn(
-      "⚠️  generateAllProfiles is deprecated. Use generateBaseProfiles for better performance with server-side merging."
-    );
+      '⚠️  generateAllProfiles is deprecated. Use generateBaseProfiles for better performance with server-side merging.'
+    )
 
-    const availableBundles = await this.resolver.getAvailableTemplates(
-      "bundles"
-    );
-    const availableFrameworks = await this.resolver.getAvailableTemplates(
-      "frameworks"
-    );
-    const availableLanguages = await this.resolver.getAvailableTemplates(
-      "languages"
-    );
+    const availableBundles =
+      await this.resolver.getAvailableTemplates('bundles')
+    const availableFrameworks =
+      await this.resolver.getAvailableTemplates('frameworks')
+    const availableLanguages =
+      await this.resolver.getAvailableTemplates('languages')
 
-    console.log(`Found templates:`);
-    console.log(`  Bundles: ${availableBundles.join(", ") || "none"}`);
-    console.log(`  Frameworks: ${availableFrameworks.join(", ") || "none"}`);
-    console.log(`  Languages: ${availableLanguages.join(", ") || "none"}`);
+    console.log(`Found templates:`)
+    console.log(`  Bundles: ${availableBundles.join(', ') || 'none'}`)
+    console.log(`  Frameworks: ${availableFrameworks.join(', ') || 'none'}`)
+    console.log(`  Languages: ${availableLanguages.join(', ') || 'none'}`)
 
-    const profiles = {};
+    const profiles = {}
     const combinations = this.generateCombinations(
       availableBundles,
       availableFrameworks,
       availableLanguages
-    );
+    )
 
-    console.log(`Generating ${combinations.length} profile combinations...`);
+    console.log(`Generating ${combinations.length} profile combinations...`)
 
     for (const combination of combinations) {
       try {
@@ -253,29 +243,29 @@ export class ProfileGenerator {
           frameworks: combination.frameworks,
           languages: combination.languages,
           options,
-        });
+        })
 
         const profileKey = this.generateProfileName(
           combination.bundles,
           combination.frameworks,
           combination.languages
-        );
-        profiles[profileKey] = profile;
+        )
+        profiles[profileKey] = profile
 
-        console.log(`✓ Generated profile: ${profileKey}`);
+        console.log(`✓ Generated profile: ${profileKey}`)
       } catch (error) {
         const profileKey = this.generateProfileName(
           combination.bundles,
           combination.frameworks,
           combination.languages
-        );
+        )
         console.error(
           `✗ Failed to generate profile ${profileKey}: ${error.message}`
-        );
+        )
       }
     }
 
-    return profiles;
+    return profiles
   }
 
   /**
@@ -285,41 +275,44 @@ export class ProfileGenerator {
    * @returns {Promise<void>}
    */
   async saveProfiles(profiles, outputDir = null) {
-    const targetDir = outputDir || this.outputDir;
+    const targetDir = outputDir || this.outputDir
 
-    // Ensure output directory exists
-    await fs.mkdir(targetDir, { recursive: true });
+    // Ensure output directory exists and clear it if existent:
+    if (existsSync(targetDir)) {
+      await fs.rm(targetDir, { force: true, recursive: true })
+    }
+    await fs.mkdir(targetDir, { recursive: true })
 
     const manifest = {
       generated: new Date().toISOString(),
-      version: "1.0.0",
+      version: '1.0.0',
       totalProfiles: Object.keys(profiles).length,
       profiles: [],
-    };
+    }
 
     for (const [profileName, profile] of Object.entries(profiles)) {
       const filename = `${profileName.replace(
         /[^a-zA-Z0-9-_]/g,
-        ","
-      )}.code-profile`;
-      const filepath = path.join(targetDir, filename);
+        ','
+      )}.code-profile`.toLowerCase()
+      const filepath = path.join(targetDir, filename)
 
       // Write profile file
-      await fs.writeFile(filepath, JSON.stringify(profile, null, 2));
-      console.log(`Saved profile: ${filepath}`);
+      await fs.writeFile(filepath, JSON.stringify(profile, null, 2))
+      console.log(`Saved profile: ${filepath}`)
 
       // Get file stats for manifest
-      const stats = await fs.stat(filepath);
+      const stats = await fs.stat(filepath)
 
       // Add to manifest
       manifest.profiles.push({
         name: profileName,
-        filename: filename,
+        filename,
         displayName: profile.name || profileName,
         size: stats.size,
         created: stats.birthtime.toISOString(),
         modified: stats.mtime.toISOString(),
-        extensionCount: JSON.parse(profile.extensions || "[]").length,
+        extensionCount: JSON.parse(profile.extensions || '[]').length,
         settingCount: Object.keys(profile.settings || {}).length,
         components: {
           hasExtensions: !!profile.extensions?.length,
@@ -328,13 +321,13 @@ export class ProfileGenerator {
           hasTasks: !!(Object.keys(profile.tasks || {}).length > 1), // More than just version
           hasSnippets: !!Object.keys(profile.snippets || {}).length,
         },
-      });
+      })
     }
 
     // Save manifest file
-    const manifestPath = path.join(targetDir, "manifest.json");
-    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
-    console.log(`Generated manifest: ${manifestPath}`);
+    const manifestPath = path.join(targetDir, 'manifest.json')
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2))
+    console.log(`Generated manifest: ${manifestPath}`)
   }
 
   /**
@@ -345,12 +338,12 @@ export class ProfileGenerator {
    * @returns {Array} array of combination objects
    */
   generateCombinations(bundles, frameworks, languages) {
-    const combinations = [];
+    const combinations = []
 
     // Generate all non-empty subsets
-    const bundleCombos = this.generateSubsets(bundles);
-    const frameworkCombos = this.generateSubsets(frameworks);
-    const languageCombos = this.generateSubsets(languages);
+    const bundleCombos = this.generateSubsets(bundles)
+    const frameworkCombos = this.generateSubsets(frameworks)
+    const languageCombos = this.generateSubsets(languages)
 
     for (const bundleCombo of bundleCombos) {
       for (const frameworkCombo of frameworkCombos) {
@@ -365,13 +358,13 @@ export class ProfileGenerator {
               bundles: bundleCombo,
               frameworks: frameworkCombo,
               languages: languageCombo,
-            });
+            })
           }
         }
       }
     }
 
-    return combinations;
+    return combinations
   }
 
   /**
@@ -380,14 +373,14 @@ export class ProfileGenerator {
    * @returns {Array} array of all subsets
    */
   generateSubsets(arr) {
-    const result = [[]]; // Start with empty set
+    const result = [[]] // Start with empty set
 
     for (const item of arr) {
-      const newSubsets = result.map((subset) => [...subset, item]);
-      result.push(...newSubsets);
+      const newSubsets = result.map((subset) => [...subset, item])
+      result.push(...newSubsets)
     }
 
-    return result;
+    return result
   }
 
   /**
@@ -398,17 +391,17 @@ export class ProfileGenerator {
    * @returns {string} profile name
    */
   generateProfileName(bundles, frameworks, languages) {
-    const parts = []; // string[]
+    const parts = [] // string[]
 
-    if (bundles.length > 0) parts.push(bundles.join(","));
-    if (frameworks.length > 0) parts.push(frameworks.join(","));
-    if (languages.length > 0) parts.push(languages.join(","));
+    if (bundles.length > 0) parts.push(bundles.join(','))
+    if (frameworks.length > 0) parts.push(frameworks.join(','))
+    if (languages.length > 0) parts.push(languages.join(','))
 
-    const flatParts = parts.map((part) => part.split(",")).flat();
-    const dedupedParts = [...new Set(flatParts)];
-    const sortedJoinedByCommas = dedupedParts.sort().join(",");
+    const flatParts = parts.map((part) => part.split(',')).flat()
+    const dedupedParts = [...new Set(flatParts)]
+    const sortedJoinedByCommas = dedupedParts.sort().join(',')
 
-    return sortedJoinedByCommas || "empty";
+    return sortedJoinedByCommas || 'empty'
   }
 
   /**
@@ -417,12 +410,12 @@ export class ProfileGenerator {
    */
   async validateTemplates() {
     try {
-      validateGitRepository();
+      validateGitRepository()
       // Additional validation logic can be added here
-      return true;
+      return true
     } catch (error) {
-      console.error(`Template validation failed: ${error.message}`);
-      return false;
+      console.error(`Template validation failed: ${error.message}`)
+      return false
     }
   }
 
@@ -430,9 +423,9 @@ export class ProfileGenerator {
    * Clear all caches
    */
   clearCaches() {
-    this.resolver.clearCache();
-    this.compiler.clearCache();
+    this.resolver.clearCache()
+    this.compiler.clearCache()
   }
 }
 
-export default ProfileGenerator;
+export default ProfileGenerator

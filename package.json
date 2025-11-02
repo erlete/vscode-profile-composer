@@ -1,0 +1,19 @@
+{
+  "name": "vscode-template-composer",
+  "version": "1.1.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "scripts": {
+    "qa:format": "prettier . --check",
+    "qa:format:fix": "prettier . --write && syncpack format",
+    "qa:lint": "eslint . --max-warnings=0",
+    "qa:lint:fix": "eslint . --fix",
+    "qa:validate-versions": "syncpack list-mismatches",
+    "qa:validate-versions:fix": "syncpack fix-mismatches"
+  },
+  "devDependencies": {
+    "eslint": "9.39.0",
+    "prettier": "3.6.2",
+    "syncpack": "13.0.4"
+  }
+}

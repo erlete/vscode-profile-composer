@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "extends": {
+    "languages": ["Python"]
+  },
+  "content": ["batisteo.vscode-django"]
+}

@@ -1,15 +1,15 @@
 {
-  "name": "vscode-profile-composer-site",
-  "version": "1.0.0",
+  "name": "@vscode-template-composer/site",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "dev": "next dev --turbopack",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "start": "next start"
   },
   "dependencies": {
     "@heroui/accordion": "2.2.24",
@@ -54,17 +54,17 @@
     "@heroui/user": "2.2.22",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",
-    "@remixicon/react": "^4.7.0",
+    "@remixicon/react": "4.7.0",
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",
     "intl-messageformat": "10.7.16",
-    "next": "^15.5.6",
+    "next": "15.5.6",
     "next-themes": "0.4.6",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.4.0",
+    "@eslint/compat": "1.4.0",
     "@next/eslint-plugin-next": "15.3.4",
     "@react-types/shared": "3.32.1",
     "@tailwindcss/postcss": "4.1.11",
@@ -73,7 +73,7 @@
     "@types/react-dom": "18.3.0",
     "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "8.34.1",
-    "eslint": "9.25.1",
+    "eslint": "9.39.0",
     "eslint-config-next": "15.3.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.31.0",
@@ -85,7 +85,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "16.0.0",
     "postcss": "8.5.6",
-    "prettier": "^3.5.3",
+    "prettier": "3.6.2",
     "tailwind-variants": "3.1.1",
     "tailwindcss": "4.1.11",
     "typescript": "5.6.3"

@@ -1,0 +1,4 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": ["esbenp.prettier-vscode", "inferrinizzard.prettier-sql-vscode"]
+}

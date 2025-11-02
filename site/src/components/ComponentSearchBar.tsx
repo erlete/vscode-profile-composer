@@ -3,7 +3,6 @@
 import React from 'react'
 import { Autocomplete, AutocompleteItem } from '@heroui/autocomplete'
 import { Chip } from '@heroui/chip'
-import { useFilter } from '@react-aria/i18n'
 import { Button } from '@heroui/button'
 import { redirect, RedirectType } from 'next/navigation'
 import { addToast } from '@heroui/toast'
@@ -40,8 +39,10 @@ export default function ComponentSearchBar({
 }: ComponentSearchBarProps) {
   const [chips, setChips] = React.useState<string[]>(value ?? [])
   const [inputValue, setInputValue] = React.useState('')
-  const { startsWith } = useFilter({ sensitivity: 'base' })
   const [loading2, setLoading2] = React.useState(false)
+
+  const startsWith = (str: string, searchStr: string) =>
+    str.toLowerCase().startsWith(searchStr.toLowerCase())
 
   // keep internal state in sync if parent controls it
   React.useEffect(() => {

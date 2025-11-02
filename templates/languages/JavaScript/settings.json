@@ -1,1 +1,21 @@
-{}
+{
+  "javascript.autoClosingTags": false,
+  "javascript.experimental.updateImportsOnPaste": true,
+  "javascript.inlayHints.variableTypes.enabled": true,
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.showOnAllFunctions": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "jsdoc-generator.descriptionForConstructors": "Create an instance of {Object}.",
+  "jsdoc-generator.descriptionPlaceholder": "<TBD>",
+  "jsdoc-generator.generateDescriptionForParameters": true,
+  "jsdoc-generator.generateDescriptionForReturns": true,
+  "jsdoc-generator.generateDescriptionForTypeParameters": true,
+  "jsdoc-generator.generativeModel": "gpt-4o-mini",
+  "jsdoc-generator.includeAsync": false,
+  "jsdoc-generator.includeExport": false,
+  "jsdoc-generator.includeParenthesisForMultipleTypes": true,
+  "jsdoc-generator.includeReturn": false,
+  "jsdoc-generator.includeTypes": false,
+  "jsdoc-generator.singleLineComments": true,
+  "template-string-converter.autoRemoveTemplateString": true
+}

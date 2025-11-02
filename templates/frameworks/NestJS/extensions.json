@@ -1,14 +1,13 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
   "extends": {
-    "bundles": ["ui", "ai"]
+    "frameworks": ["Node"],
+    "languages": ["TypeScript"]
   },
   "content": [
-    "me-dutour-mathieu.vscode-github-actions",
-    "dbaeumer.vscode-eslint",
-    "deque-systems.vscode-axe-linter",
-    "esbenp.prettier-vscode",
-    "formulahendry.auto-close-tag",
-    "formulahendry.auto-rename-tag"
+    "abhijoybasak.nestjs-files",
+    "ashinzekene.nestjs",
+    "estevamsouza.nestjs-snippets-for-vscode",
+    "fuhidev.vscode-nesttypeorm"
   ]
 }

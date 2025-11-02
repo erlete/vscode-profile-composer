@@ -1,7 +1,7 @@
-import { execFileSync } from "child_process";
-import { promises as fs } from "fs";
-import path from "path";
-import Ajv from "ajv";
+import { execFileSync } from 'child_process'
+import { promises as fs } from 'fs'
+import path from 'path'
+import Ajv from 'ajv'
 
 /**
  * Ensure the current working directory (or provided cwd) is the git repository root.
@@ -14,37 +14,37 @@ import Ajv from "ajv";
  * @throws {Error} - descriptive error when not at repo root or not a git repo
  */
 export function validateGitRepository(cwd = process.cwd()) {
-  let gitTop;
+  let gitTop
   try {
-    gitTop = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+    gitTop = execFileSync('git', ['rev-parse', '--show-toplevel'], {
       cwd,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
   } catch (err) {
-    const e = new Error("Not a git repository (git rev-parse failed).");
-    e.cause = err;
-    throw e;
+    const e = new Error('Not a git repository (git rev-parse failed).')
+    e.cause = err
+    throw e
   }
 
-  const resolvedGitTop = path.resolve(gitTop);
-  const resolvedCwd = path.resolve(cwd);
+  const resolvedGitTop = path.resolve(gitTop)
+  const resolvedCwd = path.resolve(cwd)
 
-  const isWin = process.platform === "win32";
+  const isWin = process.platform === 'win32'
   const equal = isWin
     ? resolvedGitTop.toLowerCase() === resolvedCwd.toLowerCase()
-    : resolvedGitTop === resolvedCwd;
+    : resolvedGitTop === resolvedCwd
 
   if (!equal) {
     const e = new Error(
       `Current directory is not the repository root.\nGit root: ${resolvedGitTop}\nCurrent:  ${resolvedCwd}`
-    );
-    e.gitRoot = resolvedGitTop;
-    e.cwd = resolvedCwd;
-    throw e;
+    )
+    e.gitRoot = resolvedGitTop
+    e.cwd = resolvedCwd
+    throw e
   }
 
-  return true;
+  return true
 }
 
 /**
@@ -56,149 +56,167 @@ export function validateGitRepository(cwd = process.cwd()) {
  * @throws {Error} - Descriptive error when validation fails
  */
 export async function validateTemplates(templatesDir = null) {
-  const templatesPath = templatesDir || path.join(process.cwd(), "templates");
-  const requiredTop = new Set(["bundles", "frameworks", "languages"]);
+  const templatesPath = templatesDir || path.join(process.cwd(), 'templates')
+  const requiredTop = new Set(['bundles', 'frameworks', 'languages'])
 
   function fail(msg) {
-    const error = new Error(msg);
-    throw error;
+    const error = new Error(msg)
+    throw error
   }
 
   async function assertDir(p, msg) {
-    const st = await fs.stat(p).catch(() => null);
-    if (!st || !st.isDirectory()) fail(msg);
+    const st = await fs.stat(p).catch(() => null)
+    if (!st || !st.isDirectory()) fail(msg)
   }
 
   try {
     await assertDir(
       templatesPath,
       `templates directory not found at ${templatesPath}`
-    );
+    )
 
-    const topEntries = await fs.readdir(templatesPath, { withFileTypes: true });
+    const topEntries = await fs.readdir(templatesPath, { withFileTypes: true })
 
     // Ensure no files at templates root
-    const hasFilesAtRoot = topEntries.some((e) => !e.isDirectory());
+    const hasFilesAtRoot = topEntries.some((e) => !e.isDirectory())
     if (hasFilesAtRoot)
-      fail("templates must contain only directories (no files) at its root");
+      fail('templates must contain only directories (no files) at its root')
 
-    const topDirs = topEntries.map((e) => e.name);
-    const missing = [...requiredTop].filter((n) => !topDirs.includes(n));
-    const extra = topDirs.filter((n) => !requiredTop.has(n));
+    const topDirs = topEntries.map((e) => e.name)
+    const missing = [...requiredTop].filter((n) => !topDirs.includes(n))
+    const extra = topDirs.filter((n) => !requiredTop.has(n))
     if (missing.length || extra.length) {
-      const parts = [];
-      if (missing.length) parts.push(`missing: ${missing.join(", ")}`);
-      if (extra.length) parts.push(`unexpected: ${extra.join(", ")}`);
+      const parts = []
+      if (missing.length) parts.push(`missing: ${missing.join(', ')}`)
+      if (extra.length) parts.push(`unexpected: ${extra.join(', ')}`)
       fail(
         `templates must contain exactly directories bundles, frameworks and languages - ${parts.join(
-          "; "
+          '; '
         )}`
-      );
+      )
     }
 
     // For each of the three top-level dirs
     for (const topName of requiredTop) {
-      const topPath = path.join(templatesPath, topName);
-      const children = await fs.readdir(topPath, { withFileTypes: true });
+      const topPath = path.join(templatesPath, topName)
+      const children = await fs.readdir(topPath, { withFileTypes: true })
 
       // They can ONLY contain directories (names arbitrary)
       const filesInTop = children
         .filter((e) => !e.isDirectory())
-        .map((e) => e.name);
+        .map((e) => e.name)
       if (filesInTop.length) {
         fail(
           `"${topName}" must contain only directories. Found file(s): ${filesInTop.join(
-            ", "
+            ', '
           )}`
-        );
+        )
       }
 
       // For each subdir inside topName
       for (const dirEnt of children) {
-        const subName = dirEnt.name;
-        const subPath = path.join(topPath, subName);
-        await assertDir(subPath, `expected directory ${subPath}`);
+        const subName = dirEnt.name
+        const subPath = path.join(topPath, subName)
+        await assertDir(subPath, `expected directory ${subPath}`)
 
-        const subItems = await fs.readdir(subPath, { withFileTypes: true });
-        const subNames = subItems.map((i) => i.name);
+        const subItems = await fs.readdir(subPath, { withFileTypes: true })
+        const subNames = subItems.map((i) => i.name)
 
-        // Must contain ONLY settings.json and extensions.json
-        const requiredFiles = new Set(["settings.json", "extensions.json"]);
-        const missingFiles = [...requiredFiles].filter(
-          (f) => !subNames.includes(f)
-        );
-        const extraFiles = subNames.filter((n) => !requiredFiles.has(n));
-        const target = path.join(templatesPath, topName, subName);
+        const allowedFiles = new Set([
+          'extensions.json',
+          'settings.json',
+          'keybindings.json',
+          'tasks.json',
+          'snippets.json',
+          'globalState.json',
+        ])
+        const extraFiles = subNames.filter((n) => !allowedFiles.has(n))
+        const presentAllowedFiles = subNames.filter((n) => allowedFiles.has(n))
 
-        if (missingFiles.length || extraFiles.length) {
-          const parts = [];
-          if (missingFiles.length)
-            parts.push(`Missing files: ${missingFiles.join(", ")}`);
-          if (extraFiles.length)
-            parts.push(`Unexpected files: ${extraFiles.join(", ")}`);
-          let rel = path.relative(process.cwd(), target);
-          if (!rel || (!rel.startsWith("..") && !path.isAbsolute(rel))) {
-            rel = `.${path.sep}${rel}`;
+        // If no allowed files are found, error out:
+        if (presentAllowedFiles.length === 0) {
+          let rel = path.relative(process.cwd(), subPath)
+          if (!rel || (!rel.startsWith('..') && !path.isAbsolute(rel))) {
+            rel = `.${path.sep}${rel}`
           }
           fail(
-            `[ERROR] Template at ${rel} expected only settings.json and extensions.json.\n  - ${parts.join(
-              ".\n  - "
-            )}`
-          );
+            `[ERROR] Template at ${rel} must contain at least one of the required files: ${[
+              ...allowedFiles,
+            ].join(', ')}.`
+          )
         }
 
-        // Validate extensions.json schema:
-        const extensionsPath = path.join(target, "extensions.json");
+        // Ensure those two are files (not directories):
+        for (const requiredFile of presentAllowedFiles) {
+          const filePath = path.join(subPath, requiredFile)
+          const st = await fs.stat(filePath).catch(() => null)
+          if (!st || !st.isFile())
+            fail(`[ERROR] ${filePath} is missing or not a file`)
+        }
+
+        // If unallowed files are found, error out:
+        if (extraFiles.length) {
+          let rel = path.relative(process.cwd(), subPath)
+          if (!rel || (!rel.startsWith('..') && !path.isAbsolute(rel))) {
+            rel = `.${path.sep}${rel}`
+          }
+          fail(
+            `[ERROR] Template at ${rel} contains unexpected files: ${extraFiles.join(
+              ', '
+            )}. Allowed files are: ${[...allowedFiles].join(', ')}.`
+          )
+        }
+
+        // Validate extensions.json schema if it exists:
+        if (!subNames.includes('extensions.json')) continue
+        const extensionsPath = path.join(subPath, 'extensions.json')
         try {
-          const extensions = JSON.parse(await fs.readFile(extensionsPath));
+          const extensions = JSON.parse(await fs.readFile(extensionsPath))
 
           if (
-            !extensions["$schema"] ||
-            extensions["$schema"] !==
-              "../../../compiler/config/extensions.schema.json"
+            !extensions.$schema ||
+            extensions.$schema !==
+              '../../../compiler/config/extensions.schema.json'
           ) {
             fail(
               `[ERROR] Template extensions file at ${path.relative(
                 process.cwd(),
                 extensionsPath
               )} has got an incorrect format.`
-            );
+            )
           }
 
           // Validate against the JSON Schema referenced by "$schema"
-          if (
-            !extensions["$schema"] ||
-            typeof extensions["$schema"] !== "string"
-          ) {
+          if (!extensions.$schema || typeof extensions.$schema !== 'string') {
             fail(
               `[ERROR] Template extensions file at ${path.relative(
                 process.cwd(),
                 extensionsPath
               )} must contain a "$schema" string property.`
-            );
+            )
           }
 
-          const schemaRef = extensions["$schema"];
-          let schema;
+          const schemaRef = extensions.$schema
+          let schema
 
           try {
             if (/^https?:\/\//.test(schemaRef)) {
               // Fetch remote schema
-              const res = await fetch(schemaRef);
+              const res = await fetch(schemaRef)
               if (!res.ok)
-                throw new Error(`Failed to fetch schema: ${res.status}`);
-              schema = await res.json();
+                throw new Error(`Failed to fetch schema: ${res.status}`)
+              schema = await res.json()
             } else {
-              // Resolve schema path relative to the template directory (target)
+              // Resolve schema path relative to the template directory (subPath)
               const schemaPath = path.isAbsolute(schemaRef)
                 ? schemaRef
-                : path.resolve(target, schemaRef);
+                : path.resolve(subPath, schemaRef)
               const schemaText = await fs
-                .readFile(schemaPath, "utf8")
-                .catch(() => null);
+                .readFile(schemaPath, 'utf8')
+                .catch(() => null)
               if (!schemaText)
-                throw new Error(`Schema not found at ${schemaPath}`);
-              schema = JSON.parse(schemaText);
+                throw new Error(`Schema not found at ${schemaPath}`)
+              schema = JSON.parse(schemaText)
             }
           } catch (err) {
             fail(
@@ -206,27 +224,27 @@ export async function validateTemplates(templatesDir = null) {
                 process.cwd(),
                 extensionsPath
               )}: ${err && err.message ? err.message : String(err)}`
-            );
+            )
           }
 
           // Perform AJV validation:
           try {
-            const ajv = new Ajv({ allErrors: true, strict: false });
-            const validate = ajv.compile(schema);
-            const valid = validate(extensions);
+            const ajv = new Ajv({ allErrors: true, strict: false })
+            const validate = ajv.compile(schema)
+            const valid = validate(extensions)
             if (!valid) {
               const errors = (validate.errors || [])
                 .map((e) => {
-                  const inst = e.instancePath || e.dataPath || "";
-                  return `${inst} ${e.message || JSON.stringify(e)}`;
+                  const inst = e.instancePath || e.dataPath || ''
+                  return `${inst} ${e.message || JSON.stringify(e)}`
                 })
-                .join("\n  - ");
+                .join('\n  - ')
               fail(
                 `[ERROR] Template extensions file at ${path.relative(
                   process.cwd(),
                   extensionsPath
                 )} does not conform to schema ${schemaRef}:\n  - ${errors}`
-              );
+              )
             }
           } catch (err) {
             fail(
@@ -236,7 +254,7 @@ export async function validateTemplates(templatesDir = null) {
               )} against schema ${schemaRef}: ${
                 err && err.message ? err.message : String(err)
               }`
-            );
+            )
           }
         } catch {
           fail(
@@ -244,24 +262,17 @@ export async function validateTemplates(templatesDir = null) {
               process.cwd(),
               extensionsPath
             )} is malformed.`
-          );
-        }
-
-        // Ensure those two are files (not directories)
-        for (const requiredFile of requiredFiles) {
-          const filePath = path.join(subPath, requiredFile);
-          const st = await fs.stat(filePath).catch(() => null);
-          if (!st || !st.isFile()) fail(`${filePath} is missing or not a file`);
+          )
         }
       }
     }
 
-    return true;
+    return true
   } catch (err) {
     const error = new Error(
       `Validation error: ${err && err.message ? err.message : String(err)}`
-    );
-    error.cause = err;
-    throw error;
+    )
+    error.cause = err
+    throw error
   }
 }

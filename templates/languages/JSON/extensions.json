@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "kricsleo.vscode-package-json-inspector",
+    "mariusalchimavicius.json-to-ts",
+    "tberman.json-schema-validator"
+  ]
+}

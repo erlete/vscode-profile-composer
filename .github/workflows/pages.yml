@@ -2,14 +2,14 @@ name: Compile and Build Site
 
 on:
   push:
-    branches: ["stable"]
+    branches: ['stable']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: "build"
+  group: 'build'
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
           cache: npm
           cache-dependency-path: |
             compiler/package-lock.json

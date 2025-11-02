@@ -1,6 +1,6 @@
 {
-  "name": "vscode-template-composer-compiler",
-  "version": "1.0.0",
+  "name": "@vscode-template-composer/compiler",
+  "version": "1.1.0",
   "license": "AGPL-3.0-only",
   "private": true,
   "main": "./index.mjs",

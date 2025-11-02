@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "extends": {
+    "frameworks": ["Node"]
+  },
+  "content": ["firsttris.vscode-jest-runner", "orta.vscode-jest"]
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "extends": {
+    "languages": ["Python"]
+  },
+  "content": [
+    "ms-toolsai.jupyter-keymap",
+    "ms-toolsai.jupyter-renderers",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.vscode-jupyter-cell-tags",
+    "ms-toolsai.vscode-jupyter-slideshow"
+  ]
+}

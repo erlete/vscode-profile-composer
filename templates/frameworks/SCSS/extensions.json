@@ -1,0 +1,4 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": ["sibiraj-s.vscode-scss-formatter", "mrmlnc.vscode-scss"]
+}

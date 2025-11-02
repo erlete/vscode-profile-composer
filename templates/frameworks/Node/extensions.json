@@ -1,14 +1,13 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
-  "extends": {
-    "bundles": ["ui", "ai"]
-  },
+  "extends": { "languages": ["JavaScript"] },
   "content": [
-    "me-dutour-mathieu.vscode-github-actions",
-    "dbaeumer.vscode-eslint",
-    "deque-systems.vscode-axe-linter",
-    "esbenp.prettier-vscode",
-    "formulahendry.auto-close-tag",
-    "formulahendry.auto-rename-tag"
+    "bengreenier.vscode-node-readme",
+    "christian-kohler.npm-intellisense",
+    "idered.npm",
+    "jacano.vscode-pnpm",
+    "unional.vscode-sort-package-json",
+    "wix.vscode-import-cost",
+    "pflannery.vscode-versionlens"
   ]
 }
