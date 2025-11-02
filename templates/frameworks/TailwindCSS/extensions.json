@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "austenc.tailwind-docs",
+    "bourhaouta.tailwindshades",
+    "bradlc.vscode-tailwindcss",
+    "heybourn.headwind"
+  ]
+}

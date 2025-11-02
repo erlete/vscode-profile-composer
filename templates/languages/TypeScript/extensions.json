@@ -1,4 +1,10 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
-  "content": ["me-dutour-mathieu.vscode-github-actions", "mhutchie.git-graph"]
+  "extends": {
+    "languages": ["JavaScript"]
+  },
+  "content": [
+    "johnsoncodehk.vscode-tsconfig-helper",
+    "yoavbls.pretty-ts-errors"
+  ]
 }

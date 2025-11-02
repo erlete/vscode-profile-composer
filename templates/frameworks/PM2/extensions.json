@@ -1,0 +1,4 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": ["alex-young.pm2-explorer"]
+}

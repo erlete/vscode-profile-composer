@@ -1,7 +1,7 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
   "extends": {
-    "bundles": ["ui", "ai"]
+    "languages": ["Python"]
   },
   "content": [
     "me-dutour-mathieu.vscode-github-actions",

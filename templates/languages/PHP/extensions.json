@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "devsense.composer-php-vscode",
+    "devsense.intelli-php-vscode",
+    "devsense.phptools-vscode",
+    "devsense.profiler-php-vscode",
+    "rexshi.phpdoc-comment-vscode-plugin",
+    "sanderronde.phpstan-vscode",
+    "bmewburn.vscode-intelephense-client",
+    "obliviousharmony.vscode-php-codesniffer",
+    "rifi2k.format-html-in-php"
+  ]
+}

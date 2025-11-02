@@ -1,0 +1,4 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": ["tamasfe.even-better-toml"]
+}

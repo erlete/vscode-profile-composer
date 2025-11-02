@@ -1,4 +1,0 @@
-{
-  "$schema": "../../../compiler/config/extensions.schema.json",
-  "content": ["me-dutour-mathieu.vscode-github-actions", "mhutchie.git-graph"]
-}

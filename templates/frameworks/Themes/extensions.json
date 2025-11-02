@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "achaq.vercel-theme",
+    "akamud.vscode-theme-onedark",
+    "beardedbear.beardedtheme",
+    "zhuangtongfa.material-theme",
+    "enkia.tokyo-night",
+    "equinusocio.vsc-material-theme-icons",
+    "miguelsolorio.fluent-icons",
+    "tal7aouy.icons",
+    "github.github-vscode-theme",
+    "ms-vscode.cpptools-themes",
+    "pkief.material-icon-theme"
+  ]
+}

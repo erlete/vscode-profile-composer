@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "extends": {
+    "languages": ["PHP"]
+  },
+  "content": [
+    "johnbillion.vscode-wordpress-hooks",
+    "wordpresstoolbox.wordpress-toolbox",
+    "yogensia.searchwpdocs"
+  ]
+}

@@ -1,13 +1,9 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
-  "extends": {
-    "bundles": ["ui"]
-  },
   "content": [
-    "me-dutour-mathieu.vscode-github-actions",
-    "mhutchie.git-graph",
-    "miguelsolorio.fluent-icons",
-    "ms-vscode-remote.remote-containers",
-    "ms-vscode-remote.remote-ssh"
+    "docker.docker",
+    "formulahendry.docker-explorer",
+    "ms-azuretools.vscode-docker",
+    "ms-azuretools.vscode-containers"
   ]
 }

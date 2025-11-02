@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "bierner.github-markdown-preview",
+    "bierner.markdown-checkbox",
+    "bierner.markdown-emoji",
+    "bierner.markdown-footnotes",
+    "bierner.markdown-mermaid",
+    "bierner.markdown-preview-github-styles",
+    "bierner.markdown-yaml-preamble",
+    "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+    "darkriszty.markdown-table-prettify",
+    "davidanson.vscode-markdownlint",
+    "shd101wyy.markdown-preview-enhanced",
+    "takumii.markdown-toc-num",
+    "tomoki1207.pdf",
+    "yzane.markdown-pdf",
+    "yzhang.markdown-all-in-one"
+  ]
+}

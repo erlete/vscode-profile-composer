@@ -1,1 +1,4 @@
-{}
+{
+  "versionlens.suggestions.showOnStartup": true,
+  "versionlens.suggestions.showPrereleasesOnStartup": true
+}

@@ -1,0 +1,6 @@
+{
+  "indentRainbow.colorOnWhiteSpaceOnly": true,
+  "indentRainbow.ignoreErrorLanguages": ["*"],
+  "indentRainbow.indicatorStyle": "light",
+  "indentRainbow.lightIndicatorStyleLineWidth": 2
+}

@@ -1,4 +1,13 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
-  "content": ["me-dutour-mathieu.vscode-github-actions", "mhutchie.git-graph"]
+  "content": [
+    "donjayamanne.python-environment-manager",
+    "donjayamanne.python-extension-pack",
+    "kevinrose.vsc-python-indent",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "twixes.pypi-assistant",
+    "njpwerner.autodocstring"
+  ]
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "aaron-bond.better-comments",
+    "christian-kohler.path-intellisense",
+    "gruntfuggly.todo-tree",
+    "mikestead.dotenv",
+    "shardulm94.trailing-spaces",
+    "usernamehw.errorlens",
+    "redhat.fabric8-analytics",
+    "naumovs.color-highlight"
+  ]
+}

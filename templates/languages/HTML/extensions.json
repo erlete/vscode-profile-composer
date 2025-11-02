@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../compiler/config/extensions.schema.json",
+  "content": [
+    "ecmel.vscode-html-css",
+    "oderwat.indent-rainbow",
+    "deque-systems.vscode-axe-linter",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag"
+  ]
+}

@@ -1,8 +1,12 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
   "content": [
-    "me-dutour-mathieu.vscode-github-actions",
-    "mhutchie.git-graph",
-    "miguelsolorio.fluent-icons"
+    "miguelsolorio.fluent-icons",
+    "brandonkirbyson.vscode-animations",
+    "legebeker.violet-flask",
+    "actboy168.tasks",
+    "jkearins.action-buttons-ext",
+    "gruntfuggly.triggertaskonsave",
+    "be5invis.vscode-custom-css"
   ]
 }

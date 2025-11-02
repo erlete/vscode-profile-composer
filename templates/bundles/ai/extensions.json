@@ -1,12 +1,11 @@
 {
   "$schema": "../../../compiler/config/extensions.schema.json",
-  "extends": {
-    "bundles": ["ui"]
-  },
   "content": [
-    "me-dutour-mathieu.vscode-github-actions",
-    "mhutchie.git-graph",
-    "ms-vscode-remote.remote-containers",
-    "ms-vscode-remote.remote-ssh"
+    "openai.chatgpt",
+    "codacy-app.codacy",
+    "github.copilot-chat",
+    "github.copilot",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "visualstudioexptteam.vscodeintellicode"
   ]
 }
