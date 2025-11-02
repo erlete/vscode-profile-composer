@@ -4,6 +4,7 @@
 ### Custom ###
 compiled
 .codacy
+.github/instructions/codacy.instructions.md
 
 ### Linux ###
 *~
@@ -239,7 +240,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,node
-
-
-#Ignore vscode AI rules
-.github\instructions\codacy.instructions.md
