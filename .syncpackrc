@@ -1,0 +1,82 @@
+{
+  "$schema": "./node_modules/syncpack/dist/schema.json",
+  "indent": "  ",
+  "sortAz": [
+    "contributors",
+    "dependencies",
+    "devDependencies",
+    "keywords",
+    "peerDependencies",
+    "resolutions",
+    "scripts"
+  ],
+  "sortFirst": [
+    "name",
+    "version",
+    "description",
+    "keywords",
+    "license",
+    "author",
+    "contributors",
+    "private",
+    "main",
+    "module",
+    "types",
+    "exports",
+    "scripts",
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "resolutions",
+    "overrides",
+    "packageManager",
+    "engines"
+  ],
+  "source": [
+    "package.json",
+    "compiler/package.json",
+    "site/package.json"
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol when developing local packages",
+      "dependencies": [
+        "$LOCAL"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod"
+      ],
+      "pinVersion": "workspace:*"
+    },
+    {
+      "label": "Sync all shared dependencies across workspace",
+      "dependencies": [
+        "**"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod",
+        "peer"
+      ],
+      "policy": "sameRange"
+    }
+  ],
+  "semverGroups": [
+    {
+      "range": "",
+      "dependencyTypes": [
+        "dev",
+        "prod",
+        "peer"
+      ],
+      "dependencies": [
+        "**"
+      ],
+      "packages": [
+        "**"
+      ]
+    }
+  ]
+}
