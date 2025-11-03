@@ -291,10 +291,8 @@ export class ProfileGenerator {
     }
 
     for (const [profileName, profile] of Object.entries(profiles)) {
-      const filename = `${profileName.replace(
-        /[^a-zA-Z0-9-_]/g,
-        ','
-      )}.code-profile`.toLowerCase()
+      const filename =
+        `${this.sanitizeFilename(profileName)}.code-profile`.toLowerCase()
       const filepath = path.join(targetDir, filename)
 
       // Write profile file
@@ -402,6 +400,22 @@ export class ProfileGenerator {
     const sortedJoinedByCommas = dedupedParts.sort().join(',')
 
     return sortedJoinedByCommas || 'empty'
+  }
+
+  /**
+   * Sanitize a profile name for use as a filename
+   * @param {string} name - profile name
+   * @returns {string} sanitized filename (without extension)
+   */
+  sanitizeFilename(name) {
+    return name
+      .replace(/\+\+/g, 'pp') // C++ -> cpp, D++ -> dpp
+      .replace(/\+/g, 'plus') // Any remaining + -> plus
+      .replace(/#/g, 'sharp') // C# -> csharp, F# -> fsharp
+      .replace(/\s+/g, '-') // Spaces to hyphens
+      .replace(/[<>:"/\\|?*]/g, '') // Remove filesystem-unsafe characters
+      .replace(/,+/g, ',') // Collapse multiple commas
+      .replace(/^[,\-_]+|[,\-_]+$/g, '') // Trim leading/trailing separators
   }
 
   /**

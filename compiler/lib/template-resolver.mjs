@@ -66,7 +66,16 @@ export class TemplateResolver {
       const content = await fs.readFile(templatePath, 'utf-8')
       // Remove comments for JSON parsing
       const cleanContent = content.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
-      return JSON.parse(cleanContent)
+      const parsed = JSON.parse(cleanContent)
+
+      // If parsed content already has a "content" property, return as-is
+      // Otherwise, wrap it in a content property for consistency
+      if (parsed && typeof parsed === 'object' && 'content' in parsed) {
+        return parsed
+      } else {
+        // Wrap raw content in a content property
+        return { content: parsed }
+      }
     } catch (error) {
       if (error.code === 'ENOENT') {
         // Return empty template if file doesn't exist
@@ -89,8 +98,14 @@ export class TemplateResolver {
       return template
     }
 
-    const mergedContent = []
-    const mergedSettings = {}
+    // Determine if this component type uses arrays or objects
+    const arrayBasedTypes = ['extensions', 'keybindings']
+    const objectBasedTypes = ['settings', 'globalState', 'tasks', 'snippets']
+
+    const isArrayBased = arrayBasedTypes.includes(componentType)
+    const isObjectBased = objectBasedTypes.includes(componentType)
+
+    const mergedContent = isArrayBased ? [] : {}
 
     // Process extends in order: bundles, frameworks, languages
     const categories = ['bundles', 'frameworks', 'languages']
@@ -104,15 +119,15 @@ export class TemplateResolver {
             componentType
           )
 
-          if (componentType === 'extensions') {
-            // For extensions, merge arrays
+          if (isArrayBased) {
+            // For array-based types (extensions, keybindings), merge arrays
             if (extendedTemplate.content) {
               mergedContent.push(...extendedTemplate.content)
             }
-          } else if (componentType === 'settings') {
-            // For settings, merge objects
+          } else if (isObjectBased) {
+            // For object-based types (settings, globalState, tasks, snippets), merge objects
             if (extendedTemplate.content) {
-              Object.assign(mergedSettings, extendedTemplate.content)
+              Object.assign(mergedContent, extendedTemplate.content)
             }
           }
         }
@@ -120,18 +135,18 @@ export class TemplateResolver {
     }
 
     // Add current template's content
-    if (componentType === 'extensions') {
+    if (isArrayBased) {
       if (template.content) {
         mergedContent.push(...template.content)
       }
       // Remove duplicates while preserving order
       const uniqueContent = [...new Set(mergedContent)]
       return { ...template, content: uniqueContent }
-    } else if (componentType === 'settings') {
+    } else if (isObjectBased) {
       if (template.content) {
-        Object.assign(mergedSettings, template.content)
+        Object.assign(mergedContent, template.content)
       }
-      return { ...template, content: mergedSettings }
+      return { ...template, content: mergedContent }
     }
 
     return template
