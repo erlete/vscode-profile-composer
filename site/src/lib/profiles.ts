@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { PROFILE_ICONS } from './profileIcons'
 
 // region Configuration
 
@@ -19,6 +20,15 @@ export const MANIFEST_FILE = join(
 )
 
 // region Helpers
+
+/**
+ * Gets a random profile icon from the available icons.
+ *
+ * @returns {string} - A random profile icon name.
+ */
+function getRandomProfileIconName(): string {
+  return PROFILE_ICONS[Math.floor(Math.random() * PROFILE_ICONS.length)]
+}
 
 /**
  * Removes any kind of JSON comments from a string.
@@ -212,11 +222,13 @@ export function composeProfile(fragmentNames: string[]): object {
     return {
       ...fragments[0],
       name: `VSCode Profile Composer (${fragmentNames.join(',').toLowerCase()})`,
+      icon: getRandomProfileIconName(),
     }
 
   // Initialize merged data structures
   const merged = {
     name: `VSCode Profile Composer (${fragmentNames.join(',').toLowerCase()})`,
+    icon: getRandomProfileIconName(),
     settings: {},
     keybindings: [],
     tasks: {},
