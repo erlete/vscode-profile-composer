@@ -1,0 +1,12 @@
+{
+  "workbench.panel.markers.hidden": [
+    {
+      "id": "workbench.panel.markers.view",
+      "isHidden": false
+    },
+    {
+      "id": "workbench.panel.output",
+      "isHidden": false
+    }
+  ]
+}

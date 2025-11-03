@@ -1,0 +1,10 @@
+[
+  {
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.toggleAuxiliaryBar"
+  },
+  {
+    "key": "ctrl+shift+alt+b",
+    "command": "workbench.action.toggleMaximizedAuxiliaryBar"
+  }
+]
